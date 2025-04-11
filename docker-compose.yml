@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: infra/frontend/Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+    environment:
+      - NODE_ENV=development
+      - REACT_APP_API_URL=http://localhost:4000/api
+    depends_on:
+      - backend
+    networks:
+      - nu-data-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: infra/backend/Dockerfile
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./src:/app/src
+    environment:
+      - NODE_ENV=development
+      - PORT=4000
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/nu_data_ui
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=${JWT_SECRET}
+      - CORS_ORIGINS=http://localhost:3000
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - nu-data-network
+
+  postgres:
+    image: postgres:14-alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=nu_data_ui
+    networks:
+      - nu-data-network
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - nu-data-network
+
+  webhook-mock:
+    build:
+      context: ./infra/webhook-mock
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+    networks:
+      - nu-data-network
+
+  sftp-server:
+    build:
+      context: ./infra/sftp
+      dockerfile: Dockerfile
+    ports:
+      - "2222:22"
+    volumes:
+      - sftp-data:/home/foo/upload
+    environment:
+      - SFTP_USER=foo
+      - SFTP_PASSWORD=pass
+    networks:
+      - nu-data-network
+
+networks:
+  nu-data-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:
+  sftp-data:
