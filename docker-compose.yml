@@ -82,8 +82,8 @@ services:
     volumes:
       - sftp-data:/home/foo/upload
     environment:
-      - SFTP_USER=foo
-      - SFTP_PASSWORD=pass
+      - SFTP_USER=${SFTP_USER}
+      - SFTP_PASSWORD=${SFTP_PASSWORD}
     networks:
       - nu-data-network
 
