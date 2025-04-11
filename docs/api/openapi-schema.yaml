@@ -1,0 +1,1314 @@
+openapi: 3.1.0
+info:
+  title: nu-data API
+  version: 1.0.0
+  description: Multi-tenant API for data list management, enrichment, dashboard analytics, and connection control.
+  contact:
+    name: Wesley Burgess
+    email: admin@nudata.co
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: https://api.nudata.co/v1
+    description: Production server
+  - url: https://staging.nudata.co/v1
+    description: Staging server
+  - url: http://localhost:3000
+    description: Local development (Node.js/React)
+  - url: http://127.0.0.1:8080
+    description: Local Rust/Hano development
+
+tags:
+  - name: Authentication
+  - name: Dashboard
+  - name: Lists
+  - name: Enrichment
+  - name: Data Groups
+  - name: Connections
+  - name: Import/Export
+  - name: Access Control
+  - name: Search
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Tenant:
+      type: object
+      required: [tenantId, tenantName]
+      properties:
+        tenantId:
+          type: integer
+        tenantName:
+          type: string
+
+    ListMetadata:
+      type: object
+      required: [key, value]
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+
+    User:
+      type: object
+      required: [userId, email, tenantId]
+      properties:
+        userId:
+          type: integer
+        email:
+          type: string
+          format: email
+        tenantId:
+          type: integer
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    LoginResponse:
+      type: object
+      required: [token]
+      properties:
+        token:
+          type: string
+
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+
+    List:
+      type: object
+      required: [listId, listName, listType, tenantId]
+      properties:
+        listId:
+          type: integer
+        listName:
+          type: string
+        listType:
+          type: string
+          enum: [Controlled, Enriched, Outcome]
+        importMethod:
+          type: string
+        enrichmentStatus:
+          type: string
+        metadata:
+          type: object
+        source:
+          type: string
+        tenantId:
+          type: integer
+
+    ListEntry:
+      type: object
+      required: [entryId, listId, data, tenantId]
+      properties:
+        entryId:
+          type: integer
+        listId:
+          type: integer
+        data:
+          type: object
+        tenantId:
+          type: integer
+
+    EnrichmentPlan:
+      type: object
+      required: [planId, planName, tenantId]
+      properties:
+        planId:
+          type: integer
+        planName:
+          type: string
+        preProcessingTasks:
+          type: array
+          items:
+            type: string
+        processingTasks:
+          type: array
+          items:
+            type: string
+        postProcessingTasks:
+          type: array
+          items:
+            type: string
+        exportConnectionId:
+          type: integer
+        tenantId:
+          type: integer
+
+    DataGroup:
+      type: object
+      required: [groupId, groupName, tenantId]
+      properties:
+        groupId:
+          type: integer
+        groupName:
+          type: string
+        filterCriteria:
+          type: object
+        columnSelections:
+          type: array
+          items:
+            type: string
+        tenantId:
+          type: integer
+
+    Connection:
+      type: object
+      required: [connectionId, connectionName, connectionType, direction, tenantId]
+      properties:
+        connectionId:
+          type: integer
+        connectionName:
+          type: string
+        connectionType:
+          type: string
+          enum: [API Webhook, FTP]
+        direction:
+          type: string
+          enum: [Import, Export]
+        configuration:
+          type: object
+        tenantId:
+          type: integer
+
+    ExportJob:
+      type: object
+      required: [jobId, exportMethod, tenantId]
+      properties:
+        jobId:
+          type: integer
+        filterCriteria:
+          type: object
+        selectedFields:
+          type: array
+          items:
+            type: string
+        exportMethod:
+          type: string
+          enum: [Download, Webhook, FTP]
+        connectionId:
+          type: integer
+        tenantId:
+          type: integer
+
+    BlacklistItem:
+      type: object
+      required: [blacklistId, value, type, tenantId]
+      properties:
+        blacklistId:
+          type: integer
+        value:
+          type: string
+        type:
+          type: string
+        reason:
+          type: string
+        tenantId:
+          type: integer
+
+    WhitelistItem:
+      type: object
+      required: [whitelistId, value, type, tenantId]
+      properties:
+        whitelistId:
+          type: integer
+        value:
+          type: string
+        type:
+          type: string
+        reason:
+          type: string
+        tenantId:
+          type: integer
+
+    DashboardSummary:
+      type: object
+      properties:
+        totalLists:
+          type: integer
+        activeCampaigns:
+          type: integer
+        recentActivity:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityLogEntry'
+
+    ActivityLogEntry:
+      type: object
+      required: [activityId, userId, timestamp, actionType]
+      properties:
+        activityId:
+          type: integer
+        userId:
+          type: integer
+        timestamp:
+          type: string
+          format: date-time
+        actionType:
+          type: string
+        details:
+          type: object
+        tenantId:
+          type: integer
+
+    HealthCheckResult:
+      type: object
+      required: [checkId, timestamp, checkType, status]
+      properties:
+        checkId:
+          type: integer
+        timestamp:
+          type: string
+          format: date-time
+        checkType:
+          type: string
+        status:
+          type: string
+          enum: [Pass, Fail, Warning]
+        details:
+          type: object
+        tenantId:
+          type: integer
+
+    CampaignSuccessRate:
+      type: object
+      required: [campaignId, successRate]
+      properties:
+        campaignId:
+          type: integer
+        successRate:
+          type: number
+          format: float
+        tenantId:
+          type: integer
+
+paths:
+  /tenants:
+    get:
+      tags: [Tenants]
+      summary: Get all tenants
+      description: Retrieves all tenants.
+      operationId: getTenants
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Tenants retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tenant'
+
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Authenticate user and return a JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      summary: Logout current user session
+      description: Logs out the current user session.
+      operationId: logoutUser
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Logout successful
+  /auth/password/reset:
+    post:
+      tags: [Authentication]
+      summary: Request password reset link
+      description: Request a password reset link by providing your email address.
+      operationId: requestPasswordReset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+              required: [email]
+      responses:
+        '200':
+          description: Reset link sent
+
+  /auth/password/reset/{token}:
+    post:
+      tags: [Authentication]
+      summary: Reset password using reset token
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                newPassword:
+                  type: string
+              required: [newPassword]
+      responses:
+        '200':
+          description: Password reset successful
+
+  /dashboard:
+    get:
+      tags: [Dashboard]
+      summary: Get user dashboard data summary
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Dashboard data returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardSummary'
+
+  /dashboard/activities:
+    get:
+      tags: [Dashboard]
+      summary: Get recent user activities
+      description: Retrieve recent user activities.
+      operationId: getRecentUserActivities
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Activity log returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityLogEntry'
+  /dashboard/healthchecks:
+    get:
+      tags: [Dashboard]
+      summary: Get system health check results
+  /dashboard/campaigns:
+    get:
+      tags: [Dashboard]
+      summary: Get campaign performance metrics
+      description: Retrieve performance metrics for campaigns.
+      operationId: getCampaignPerformanceMetrics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Campaign metrics returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CampaignSuccessRate'
+
+  /lists:
+    get:
+      tags: [Lists]
+      summary: Get all lists for current tenant
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lists retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/List'
+
+    post:
+      tags: [Lists]
+      summary: Create a new list
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/List'
+      responses:
+        '201':
+          description: List created
+
+  /lists/{listId}:
+    get:
+      tags: [Lists]
+      summary: Get a list by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: listId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/List'
+
+    put:
+      tags: [Lists]
+      summary: Update a list
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: listId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/List'
+      responses:
+        '200':
+          description: List updated
+
+    delete:
+      tags: [Lists]
+      summary: Delete a list
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: listId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: List deleted
+
+  /lists/{listId}/entries:
+    get:
+      tags: [Lists]
+      summary: Get entries for a list
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: listId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List entries returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ListEntry'
+
+    post:
+      tags: [Lists]
+      summary: Add entries to a list
+      description: "Add one or more entries to the list."
+      operationId: addListEntries
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: listId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ListEntry'
+      responses:
+        '201':
+          description: Entries added successfully
+  /lists/{listId}/entries/{entryId}:
+    get:
+      tags: [Lists]
+      summary: Get a specific entry
+      description: Retrieve a specific entry from a list by its ID.
+      operationId: getSpecificListEntry
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: listId
+          in: path
+          required: true
+          description: The ID of the list containing the entry.
+          schema:
+            type: integer
+        - name: entryId
+          in: path
+          required: true
+          description: The ID of the entry to retrieve.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Entry returned successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListEntry'
+
+    put:
+      tags: [Lists]
+      summary: Update an entry
+      description: Update a specific entry in a list.
+      operationId: updateListEntry
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: listId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: entryId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListEntry'
+      responses:
+        '200':
+          description: Entry updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListEntry'
+    delete:
+      tags: [Lists]
+      summary: Delete an entry
+      description: Delete a specific entry from a list.
+      operationId: deleteListEntry
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: listId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: entryId
+          in: path
+          required: true
+          description: The ID of the entry to delete.
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Entry deleted
+          content:
+            application/json:
+              schema:
+                type: integer
+  /lists/{listId}/metadata:
+    get:
+      tags: [Lists]
+      summary: Retrieve list metadata
+      description: Retrieve metadata for a specific list by its ID.
+      operationId: getListMetadata
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: listId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Metadata returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ListMetadata'
+
+    post:
+      tags: [Lists]
+      summary: Add metadata to list
+      description: Add metadata to a specific list by its ID.
+      operationId: addListMetadata
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: listId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListMetadata'
+      responses:
+        '201':
+          description: Metadata added
+
+  /enrichment-plans:
+    get:
+      tags: [Enrichment]
+      summary: Get all enrichment plans
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Enrichment plans retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EnrichmentPlan'
+
+    post:
+      tags: [Enrichment]
+      summary: Create new enrichment plan
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnrichmentPlan'
+      responses:
+        '201':
+          description: Plan created
+
+  /enrichment-plans/{planId}:
+    get:
+      tags: [Enrichment]
+      summary: Get an enrichment plan by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: planId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Plan retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnrichmentPlan'
+
+    put:
+      tags: [Enrichment]
+      summary: Update an enrichment plan
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: planId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnrichmentPlan'
+      responses:
+        '200':
+          description: Plan updated
+
+    delete:
+      tags: [Enrichment]
+      summary: Delete an enrichment plan
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: planId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Plan deleted
+
+  /enrichment-plans/{planId}/tasks:
+    get:
+      tags: [Enrichment]
+      summary: Get tasks for enrichment plan
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: planId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Tasks retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+    post:
+      tags: [Enrichment]
+      summary: Add tasks to enrichment plan
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: planId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '201':
+          description: Tasks added
+
+  /enriched-data:
+    get:
+      tags: [Enrichment]
+      summary: Get enriched data
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Enriched data returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /data-groups:
+    get:
+      tags: [Data Groups]
+      summary: Get all data groups
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Data groups retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DataGroup'
+
+    post:
+      tags: [Data Groups]
+      summary: Create a new data group
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataGroup'
+      responses:
+        '201':
+          description: Data group created
+
+  /data-groups/{groupId}:
+    get:
+      tags: [Data Groups]
+      summary: Get a data group by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Group retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataGroup'
+
+    put:
+      tags: [Data Groups]
+      summary: Update a data group
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataGroup'
+      responses:
+        '200':
+          description: Group updated
+
+    delete:
+      tags: [Data Groups]
+      summary: Delete a data group
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Group deleted
+
+  /data-groups/{groupId}/members:
+    get:
+      tags: [Data Groups]
+      summary: Get members of a data group
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Group members returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /auto-groups:
+    get:
+      tags: [Data Groups]
+      summary: Get all auto-generated data groups
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Auto-groups returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /connections:
+    get:
+      tags: [Connections]
+      summary: Get all connections
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Connections retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Connection'
+
+    post:
+      tags: [Connections]
+      summary: Create a new connection
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Connection'
+      responses:
+        '201':
+          description: Connection created
+
+  /connections/{connectionId}:
+    get:
+      tags: [Connections]
+      summary: Get a connection by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: connectionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Connection details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Connection'
+
+    put:
+      tags: [Connections]
+      summary: Update a connection
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: connectionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Connection'
+      responses:
+        '200':
+          description: Connection updated
+
+    delete:
+      tags: [Connections]
+      summary: Delete a connection
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: connectionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Connection deleted
+
+  /connections/{connectionId}/test:
+    post:
+      tags: [Connections]
+      summary: Test a connection
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: connectionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Connection tested successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+
+  /import:
+    post:
+      tags: [Import/Export]
+      summary: Import data into system
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '202':
+          description: Import initiated
+
+  /export:
+    post:
+      tags: [Import/Export]
+      summary: Initiate export job
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportJob'
+      responses:
+        '201':
+          description: Export job created
+
+  /export/{jobId}:
+    get:
+      tags: [Import/Export]
+      summary: Check export job status
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Export job status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportJob'
+
+  /export/{jobId}/data:
+    get:
+      tags: [Import/Export]
+      summary: Download exported data
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Exported data file
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+
+  /blacklist:
+    get:
+      tags: [Access Control]
+      summary: Get all blacklist entries
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Blacklist retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BlacklistItem'
+
+    post:
+      tags: [Access Control]
+      summary: Add an item to blacklist
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlacklistItem'
+      responses:
+        '201':
+          description: Blacklist item added
+
+  /blacklist/{itemId}:
+    delete:
+      tags: [Access Control]
+      summary: Remove item from blacklist
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Item deleted
+
+  /whitelist:
+    get:
+      tags: [Access Control]
+      summary: Get all whitelist entries
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Whitelist retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WhitelistItem'
+
+    post:
+      tags: [Access Control]
+      summary: Add an item to whitelist
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WhitelistItem'
+      responses:
+        '201':
+          description: Whitelist item added
+
+  /whitelist/{itemId}:
+    delete:
+      tags: [Access Control]
+      summary: Remove item from whitelist
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Item deleted
+
+  /search:
+    get:
+      tags: [Search]
+      summary: Global search across lists, groups, and enriched data
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 25
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Search results returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                  total:
+                    type: integer
