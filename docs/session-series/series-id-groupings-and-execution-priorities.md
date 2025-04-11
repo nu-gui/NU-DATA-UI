@@ -22,7 +22,7 @@ Here’s the **updated Series ID layout** for Phase 1 sessions, including new Se
 
 | **Series** | **Session Area**           | **Focus**                                                                 | **Suggested Order** | **Parallel Group** |
 |------------|----------------------------|---------------------------------------------------------------------------|----------------------|---------------------|
-| `R`        | Project Roadmap & Docs     | Project overview, functional objectives, key feature mapping              | 🔁 First              | G0                  |
+| `R`        | Project Roadmap & Docs     | Project overview, functional objectives, key feature mapping              | ✅ Complete          | G0                  |
 | `M1`       | Frontend Planning          | UI/UX scoping, navigation structure, React layout skeleton                | Parallel with `B1`   | G1                  |
 | `B1`       | Backend Planning           | API structure, service boundaries, data flow (OpenAPI 3.1)                | Parallel with `M1`   | G1                  |
 | `DA1`      | Data Architecture          | PostgreSQL schema, multi-tenancy design, foreign key integrity            | Follows `B1`         | G2                  |
