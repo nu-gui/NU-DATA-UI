@@ -20,9 +20,9 @@ NU-DATA-UI is a multi-tenant SaaS platform for contact data enrichment, segmenta
 | SE1 | Auth & RBAC Control Flow | ✅ In Progress | G2 | R1 |
 | M1 | UI/UX Framework Planning | ✅ Complete | G1 | R1 |
 | B1 | Backend API Structure & OpenAPI Planning | ✅ Complete | G1 | R1 |
-| DA1 | PostgreSQL Schema & Multi-Tenant Architecture | 🔄 Pending | G2 | B1 |
-| LLM1 | RPC/WPC Scoring & Name Match Engine | 🔄 Pending | G3 | DA1 |
-| DS1 | Export Insights & Dashboard Metrics | 🔄 Pending | G6 | LLM1 |
+| DA1 | PostgreSQL Schema & Multi-Tenant Architecture | ✅ Complete | G2 | B1 |
+| LLM1 | RPC/WPC Scoring & Name Match Engine | ✅ Complete | G3 | DA1 |
+| DS1 | Export Insights & Dashboard Metrics | ✅ Complete | G6 | LLM1 |
 | T1 | Test Suite & Coverage Strategy | 🔄 Pending | G5 | B1, SE1 |
 | D1 | CI/CD GitHub Actions Setup | 🔄 Pending | G4 | R1 |
 | PY1 | Python-Based Enrichment Runner Service | 🔄 Planned | - | DA1 |
@@ -42,4 +42,4 @@ NU-DATA-UI is a multi-tenant SaaS platform for contact data enrichment, segmenta
 | **Admin Tools** | Credits, user roles, audit logs, configuration access |
 
 ## Next Steps
-After Session B1 is completed, proceed with Session DA1 (PostgreSQL Schema & Multi-Tenant Architecture) according to the roadmap.
+After Session DS1 is completed, proceed with Session T1 (Test Suite & Coverage Strategy) according to the roadmap.
