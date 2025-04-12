@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles */
+@layer components {
+  .sidebar-link {
+    @apply flex items-center p-2 text-gray-600 rounded-lg hover:bg-gray-100;
+  }
+  
+  .sidebar-link.active {
+    @apply bg-blue-100 text-blue-700;
+  }
+  
+  .page-container {
+    @apply p-4 md:p-6 lg:p-8;
+  }
+  
+  .top-header {
+    @apply flex items-center justify-between p-4 border-b;
+  }
+  
+  .wizard-step {
+    @apply flex items-center;
+  }
+  
+  .wizard-step-number {
+    @apply flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 text-gray-700 mr-2;
+  }
+  
+  .wizard-step-number.active {
+    @apply bg-blue-500 text-white;
+  }
+  
+  .wizard-step-number.completed {
+    @apply bg-green-500 text-white;
+  }
+}
