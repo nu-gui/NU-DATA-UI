@@ -1,0 +1,32 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: staging
+    timeout-minutes: 15
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Deploy to staging
+      run: |
+        echo "Deploying to staging environment"
+        # Here you would include commands to deploy to your staging server
+        # For example, updating docker-compose.yml with latest image tags
+        # and running docker-compose up -d on the staging server
+      env:
+        STAGING_HOST: ${{ secrets.STAGING_HOST }}
+        STAGING_SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
+        STAGING_USER: ${{ secrets.STAGING_USER }}

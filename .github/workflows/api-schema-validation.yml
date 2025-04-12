@@ -1,0 +1,28 @@
+name: API Schema Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'docs/api/**'
+
+jobs:
+  validate-schema:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Install Spectral
+      run: npm install -g @stoplight/spectral-cli
+        
+    - name: Validate OpenAPI Schema
+      run: spectral lint docs/api/openapi-schema.yaml
