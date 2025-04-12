@@ -41,7 +41,22 @@ function calculateFuzzyMatchScore(source, target) {
   const normalizedSource = source.toLowerCase().trim();
   const normalizedTarget = target.toLowerCase().trim();
   
-  return stringSimilarity.jaroWinklerSimilarity(normalizedSource, normalizedTarget);
+  if (normalizedSource === normalizedTarget) {
+    return 1.0;
+  }
+  
+  const { calculatePrefixMatchScore } = require('./nameMatching');
+  const prefixScore = calculatePrefixMatchScore(normalizedSource, normalizedTarget, 3);
+  
+  const similarityScore = stringSimilarity.jaroWinklerSimilarity(normalizedSource, normalizedTarget);
+  
+  const boostedScore = prefixScore >= 1 
+    ? similarityScore * 1.2 // Boost by 20% if all prefix letters match
+    : prefixScore >= 0.67 
+      ? similarityScore * 1.1 // Boost by 10% if 2/3 prefix letters match
+      : similarityScore;
+  
+  return Math.min(boostedScore, 1.0);
 }
 
 /**
@@ -91,10 +106,17 @@ function calculateRPCScore(sourceNameComponents, targetNameComponents) {
     targetNameComponents.lastName
   );
   
-  const weightedScore = 
+  const hasFirstNameExactMatch = firstNameScore >= 0.95 && sourceNameComponents.firstName;
+  const hasLastNameExactMatch = lastNameScore >= 0.95 && sourceNameComponents.lastName;
+  
+  let weightedScore = 
     (firstNameScore * COMPONENT_WEIGHTS.FIRST_NAME) +
     (middleNameScore * COMPONENT_WEIGHTS.MIDDLE_NAME) +
     (lastNameScore * COMPONENT_WEIGHTS.LAST_NAME);
+  
+  if ((hasFirstNameExactMatch || hasLastNameExactMatch) && weightedScore >= 0.3) {
+    weightedScore = Math.min(weightedScore * 1.15, 1.0); // Boost by 15% if any name fully matches
+  }
   
   let confidenceLevel = CONFIDENCE_LEVELS.NONE.label;
   
@@ -103,7 +125,24 @@ function calculateRPCScore(sourceNameComponents, targetNameComponents) {
   } else if (weightedScore >= CONFIDENCE_LEVELS.MEDIUM.min) {
     confidenceLevel = CONFIDENCE_LEVELS.MEDIUM.label;
   } else if (weightedScore > 0) {
-    confidenceLevel = CONFIDENCE_LEVELS.LOW.label;
+    const { calculatePrefixMatchScore } = require('./nameMatching');
+    const firstNamePrefix = calculatePrefixMatchScore(
+      sourceNameComponents.firstName || '',
+      targetNameComponents.firstName || '',
+      3
+    );
+    const lastNamePrefix = calculatePrefixMatchScore(
+      sourceNameComponents.lastName || '',
+      targetNameComponents.lastName || '',
+      3
+    );
+    
+    if ((firstNamePrefix >= 0.67 || lastNamePrefix >= 0.67) && weightedScore >= 0.3) {
+      weightedScore = Math.max(weightedScore, 0.5); // Ensure at least medium match for good prefix
+      confidenceLevel = CONFIDENCE_LEVELS.MEDIUM.label;
+    } else {
+      confidenceLevel = CONFIDENCE_LEVELS.LOW.label;
+    }
   }
   
   return {
@@ -112,7 +151,8 @@ function calculateRPCScore(sourceNameComponents, targetNameComponents) {
     matchBreakdown: {
       firstName: parseFloat(firstNameScore.toFixed(2)),
       middleName: parseFloat(middleNameScore.toFixed(2)),
-      lastName: parseFloat(lastNameScore.toFixed(2))
+      lastName: parseFloat(lastNameScore.toFixed(2)),
+      hasExactMatch: hasFirstNameExactMatch || hasLastNameExactMatch
     }
   };
 }

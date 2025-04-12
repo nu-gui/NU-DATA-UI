@@ -65,7 +65,34 @@ function getNicknameVariations(name) {
 }
 
 /**
- * Match names with nickname awareness
+ * Calculate sequential prefix match score
+ * @param {string} source - Source string
+ * @param {string} target - Target string
+ * @param {number} prefixLength - Length of prefix to check (default: 3)
+ * @returns {number} Score between 0 and 1
+ */
+function calculatePrefixMatchScore(source, target, prefixLength = 3) {
+  if (!source || !target) return 0;
+  
+  const sourcePrefix = source.substring(0, Math.min(prefixLength, source.length));
+  const targetPrefix = target.substring(0, Math.min(prefixLength, target.length));
+  
+  let matchCount = 0;
+  const minLength = Math.min(sourcePrefix.length, targetPrefix.length);
+  
+  for (let i = 0; i < minLength; i++) {
+    if (sourcePrefix[i] === targetPrefix[i]) {
+      matchCount++;
+    } else {
+      break; // Stop at first non-matching character to enforce sequential matching
+    }
+  }
+  
+  return matchCount / prefixLength;
+}
+
+/**
+ * Match names with nickname awareness and sequential letter matching
  * @param {string} sourceName - Source name
  * @param {string} targetName - Target name to compare against
  * @returns {Object} Match result with score and match type
@@ -94,15 +121,28 @@ function matchNamesWithNicknames(sourceName, targetName) {
   }
   
   let bestScore = 0;
+  let prefixScore = 0;
   
   for (const sourceVar of sourceVariations) {
     for (const targetVar of targetVariations) {
-      const score = stringSimilarity.jaroWinklerSimilarity(sourceVar, targetVar);
-      if (score > bestScore) {
-        bestScore = score;
+      const currentPrefixScore = calculatePrefixMatchScore(sourceVar, targetVar, 3);
+      prefixScore = Math.max(prefixScore, currentPrefixScore);
+      
+      const similarityScore = stringSimilarity.jaroWinklerSimilarity(sourceVar, targetVar);
+      
+      const boostedScore = currentPrefixScore >= 1 
+        ? similarityScore * 1.2 // Boost by 20% if all prefix letters match
+        : currentPrefixScore >= 0.67 
+          ? similarityScore * 1.1 // Boost by 10% if 2/3 prefix letters match
+          : similarityScore;
+      
+      if (boostedScore > bestScore) {
+        bestScore = boostedScore;
       }
     }
   }
+  
+  bestScore = Math.min(bestScore, 1.0);
   
   let matchType = 'none';
   if (bestScore >= 0.8) {
@@ -110,12 +150,18 @@ function matchNamesWithNicknames(sourceName, targetName) {
   } else if (bestScore >= 0.5) {
     matchType = 'medium';
   } else if (bestScore > 0) {
-    matchType = 'low';
+    if (prefixScore >= 0.67 && bestScore >= 0.3) {
+      bestScore = Math.max(bestScore, 0.5); // Ensure at least medium match for good prefix
+      matchType = 'medium';
+    } else {
+      matchType = 'low';
+    }
   }
   
   return { 
     score: parseFloat(bestScore.toFixed(2)), 
-    matchType 
+    matchType,
+    prefixScore: parseFloat(prefixScore.toFixed(2))
   };
 }
 
@@ -148,15 +194,55 @@ function handleSwappedNames(sourceComponents, targetComponents) {
     )
   };
   
-  const normalScore = (normalMatch.firstName.score + normalMatch.lastName.score) / 2;
-  const swappedScore = (swappedMatch.firstName.score + swappedMatch.lastName.score) / 2;
+  let normalScore = 0;
+  let componentCount = 0;
+  
+  const hasFullMatch = normalMatch.firstName.score >= 0.95 || normalMatch.lastName.score >= 0.95;
+  
+  if (sourceComponents.firstName) {
+    normalScore += normalMatch.firstName.score;
+    componentCount++;
+  }
+  
+  if (sourceComponents.lastName) {
+    normalScore += normalMatch.lastName.score;
+    componentCount++;
+  }
+  
+  normalScore = componentCount > 0 ? normalScore / componentCount : 0;
+  
+  if (hasFullMatch && normalScore >= 0.3) {
+    normalScore = Math.min(normalScore * 1.15, 1.0); // Boost by 15% if any component is full match
+  }
+  
+  let swappedScore = 0;
+  let swappedComponentCount = 0;
+  
+  const hasSwappedFullMatch = swappedMatch.firstName.score >= 0.95 || swappedMatch.lastName.score >= 0.95;
+  
+  if (sourceComponents.firstName) {
+    swappedScore += swappedMatch.firstName.score;
+    swappedComponentCount++;
+  }
+  
+  if (sourceComponents.lastName) {
+    swappedScore += swappedMatch.lastName.score;
+    swappedComponentCount++;
+  }
+  
+  swappedScore = swappedComponentCount > 0 ? swappedScore / swappedComponentCount : 0;
+  
+  if (hasSwappedFullMatch && swappedScore >= 0.3) {
+    swappedScore = Math.min(swappedScore * 1.15, 1.0); // Boost by 15% if any component is full match
+  }
   
   if (swappedScore > normalScore && swappedScore >= 0.7) {
     return {
       score: swappedScore,
       matchType: 'swapped',
       components: swappedMatch,
-      isSwapped: true
+      isSwapped: true,
+      hasFullMatch: hasSwappedFullMatch
     };
   }
   
@@ -164,7 +250,8 @@ function handleSwappedNames(sourceComponents, targetComponents) {
     score: normalScore,
     matchType: normalScore >= 0.8 ? 'high' : (normalScore >= 0.5 ? 'medium' : 'low'),
     components: normalMatch,
-    isSwapped: false
+    isSwapped: false,
+    hasFullMatch
   };
 }
 
@@ -220,5 +307,6 @@ module.exports = {
   matchFullNames,
   getNicknameVariations,
   extractNameComponents,
+  calculatePrefixMatchScore,
   NICKNAME_MAPPINGS
 };

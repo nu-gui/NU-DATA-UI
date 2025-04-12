@@ -37,6 +37,13 @@ describe('RPC Scoring Service', () => {
       expect(score).toBeGreaterThan(0.8);
       expect(score).toBeLessThan(1);
     });
+    
+    test('should prioritize sequential prefix matching', () => {
+      const score1 = calculateFuzzyMatchScore('Jennifer', 'Jennings');
+      const score2 = calculateFuzzyMatchScore('Jennifer', 'Jninefer');
+      
+      expect(score1).toBeGreaterThan(score2);
+    });
   });
   
   describe('extractNameComponents', () => {
@@ -141,6 +148,20 @@ describe('RPC Scoring Service', () => {
       
       expect(result.rpcScore).toBe(0.8); // 0.4 (first) + 0 (middle) + 0.4 (last)
       expect(result.matchType).toBe('high');
+    });
+    
+    test('should boost score when one component matches exactly', () => {
+      const source = { firstName: 'John', middleName: '', lastName: 'Smith' };
+      const target = { firstName: 'John', middleName: '', lastName: 'Jones' };
+      
+      const result = calculateRPCScore(source, target);
+      
+      expect(result.matchBreakdown.hasExactMatch).toBe(true);
+      expect(result.rpcScore).toBeGreaterThan(0.5);
+      
+      const source2 = { firstName: 'Johnny', middleName: '', lastName: 'Smith' };
+      const result2 = calculateRPCScore(source2, target);
+      expect(result.rpcScore).toBeGreaterThan(result2.rpcScore);
     });
   });
   
