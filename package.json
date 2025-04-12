@@ -21,19 +21,23 @@
   },
   "homepage": "https://github.com/nu-gui/NU-DATA-UI#readme",
   "dependencies": {
+    "autoprefixer": "^10.4.21",
     "axios": "^1.5.0",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "framer-motion": "^12.6.5",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^3.1.2",
+    "postcss": "^8.5.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^8.1.2",
-    "react-router-dom": "^6.16.0",
-    "redux": "^4.2.1"
+    "react-router-dom": "^6.30.0",
+    "redux": "^4.2.1",
+    "tailwindcss": "^4.1.3"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
