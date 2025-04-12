@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Table, Button, Spinner, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Table, Button, Spinner, Alert } from 'react-bootstrap';
 import { Bar, Line, Pie } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import Card from '../../components/design/Card';
+import { animations } from '../../styles/animations';
+import { motion } from 'framer-motion';
 
 Chart.register(...registerables);
 
@@ -240,8 +243,14 @@ const ExportAnalyticsDashboard = () => {
       <h2 className="mb-4">Export Analytics Dashboard</h2>
       
       {/* Filters and Export Buttons */}
-      <Card className="mb-4">
-        <Card.Body>
+      <Card variant="outlined" className="mb-4">
+        <motion.div 
+          className="p-3"
+          variants={animations.fadeIn}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+        >
           <Row>
             <Col md={3}>
               <div className="mb-3">
@@ -251,6 +260,9 @@ const ExportAnalyticsDashboard = () => {
                   onChange={date => setStartDate(date)}
                   className="form-control"
                   dateFormat="yyyy-MM-dd"
+                  selectsStart
+                  startDate={startDate}
+                  endDate={endDate}
                 />
               </div>
             </Col>
@@ -262,6 +274,9 @@ const ExportAnalyticsDashboard = () => {
                   onChange={date => setEndDate(date)}
                   className="form-control"
                   dateFormat="yyyy-MM-dd"
+                  selectsEnd
+                  startDate={startDate}
+                  endDate={endDate}
                   minDate={startDate}
                 />
               </div>
@@ -291,42 +306,69 @@ const ExportAnalyticsDashboard = () => {
               </div>
             </Col>
           </Row>
-        </Card.Body>
+        </motion.div>
       </Card>
       
       {/* Summary Cards */}
       {summary && (
         <Row className="mb-4">
           <Col md={3}>
-            <Card className="h-100">
-              <Card.Body className="text-center">
+            <Card variant="elevated" className="h-100">
+              <motion.div 
+                className="text-center p-4"
+                variants={animations.fadeIn}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+              >
                 <h3 className="display-4">{summary.total_exports}</h3>
-                <Card.Title>Total Exports</Card.Title>
-              </Card.Body>
+                <div className="fw-bold">Total Exports</div>
+              </motion.div>
             </Card>
           </Col>
           <Col md={3}>
-            <Card className="h-100">
-              <Card.Body className="text-center">
+            <Card variant="elevated" className="h-100">
+              <motion.div 
+                className="text-center p-4"
+                variants={animations.fadeIn}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ delay: 0.1 }}
+              >
                 <h3 className="display-4">{summary.total_records?.toLocaleString()}</h3>
-                <Card.Title>Records Exported</Card.Title>
-              </Card.Body>
+                <div className="fw-bold">Records Exported</div>
+              </motion.div>
             </Card>
           </Col>
           <Col md={3}>
-            <Card className="h-100">
-              <Card.Body className="text-center">
+            <Card variant="elevated" className="h-100">
+              <motion.div 
+                className="text-center p-4"
+                variants={animations.fadeIn}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ delay: 0.2 }}
+              >
                 <h3 className="display-4">{summary.unique_lists}</h3>
-                <Card.Title>Unique Lists</Card.Title>
-              </Card.Body>
+                <div className="fw-bold">Unique Lists</div>
+              </motion.div>
             </Card>
           </Col>
           <Col md={3}>
-            <Card className="h-100">
-              <Card.Body className="text-center">
+            <Card variant="elevated" className="h-100">
+              <motion.div 
+                className="text-center p-4"
+                variants={animations.fadeIn}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ delay: 0.3 }}
+              >
                 <h3 className="display-4">{summary.unique_plans}</h3>
-                <Card.Title>Enrichment Plans</Card.Title>
-              </Card.Body>
+                <div className="fw-bold">Enrichment Plans</div>
+              </motion.div>
             </Card>
           </Col>
         </Row>
@@ -336,9 +378,15 @@ const ExportAnalyticsDashboard = () => {
       <Row className="mb-4">
         {/* Export Method Breakdown */}
         <Col md={4}>
-          <Card className="h-100">
-            <Card.Header>Export Method Breakdown</Card.Header>
-            <Card.Body>
+          <Card variant="default" className="h-100">
+            <motion.div 
+              className="p-3"
+              variants={animations.slideUp}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              <h5 className="card-title mb-3">Export Method Breakdown</h5>
               <div style={{ height: '300px' }}>
                 {prepareExportTypeChart() ? (
                   <Bar data={prepareExportTypeChart()} options={barOptions} />
@@ -346,15 +394,22 @@ const ExportAnalyticsDashboard = () => {
                   <div className="text-center mt-5">No data available</div>
                 )}
               </div>
-            </Card.Body>
+            </motion.div>
           </Card>
         </Col>
         
         {/* Weekly Export Volumes */}
         <Col md={4}>
-          <Card className="h-100">
-            <Card.Header>Export Volumes Over Time</Card.Header>
-            <Card.Body>
+          <Card variant="default" className="h-100">
+            <motion.div 
+              className="p-3"
+              variants={animations.slideUp}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ delay: 0.1 }}
+            >
+              <h5 className="card-title mb-3">Export Volumes Over Time</h5>
               <div style={{ height: '300px' }}>
                 {prepareWeeklyVolumeChart() ? (
                   <Line data={prepareWeeklyVolumeChart()} options={lineOptions} />
@@ -362,15 +417,22 @@ const ExportAnalyticsDashboard = () => {
                   <div className="text-center mt-5">No data available</div>
                 )}
               </div>
-            </Card.Body>
+            </motion.div>
           </Card>
         </Col>
         
         {/* Tag Breakdown */}
         <Col md={4}>
-          <Card className="h-100">
-            <Card.Header>Exports by Tag</Card.Header>
-            <Card.Body>
+          <Card variant="default" className="h-100">
+            <motion.div 
+              className="p-3"
+              variants={animations.slideUp}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ delay: 0.2 }}
+            >
+              <h5 className="card-title mb-3">Exports by Tag</h5>
               <div style={{ height: '300px' }}>
                 {prepareTagChart() ? (
                   <Pie data={prepareTagChart()} options={pieOptions} />
@@ -378,15 +440,22 @@ const ExportAnalyticsDashboard = () => {
                   <div className="text-center mt-5">No data available</div>
                 )}
               </div>
-            </Card.Body>
+            </motion.div>
           </Card>
         </Col>
       </Row>
       
       {/* High Volume Exports Table */}
-      <Card className="mb-4">
-        <Card.Header>Recent High-Volume Exports</Card.Header>
-        <Card.Body>
+      <Card variant="default" className="mb-4">
+        <motion.div 
+          className="p-3"
+          variants={animations.slideUp}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          transition={{ delay: 0.3 }}
+        >
+          <h5 className="card-title mb-3">Recent High-Volume Exports</h5>
           <Table responsive striped hover>
             <thead>
               <tr>
@@ -417,13 +486,20 @@ const ExportAnalyticsDashboard = () => {
               )}
             </tbody>
           </Table>
-        </Card.Body>
+        </motion.div>
       </Card>
       
       {/* Enrichment Plan Usage */}
-      <Card className="mb-4">
-        <Card.Header>Enrichment Plan Usage</Card.Header>
-        <Card.Body>
+      <Card variant="default" className="mb-4">
+        <motion.div 
+          className="p-3"
+          variants={animations.slideUp}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          transition={{ delay: 0.4 }}
+        >
+          <h5 className="card-title mb-3">Enrichment Plan Usage</h5>
           <Table responsive striped hover>
             <thead>
               <tr>
@@ -448,7 +524,7 @@ const ExportAnalyticsDashboard = () => {
               )}
             </tbody>
           </Table>
-        </Card.Body>
+        </motion.div>
       </Card>
     </Container>
   );
