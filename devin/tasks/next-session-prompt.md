@@ -45,7 +45,7 @@ Continue Phase 1 of NU-DATA-UI by executing the remaining sessions in order:
    - Access the Design Repo when needed to ensure that the design and development are in sync with each other
    - Figma Design Access: 
        - Figma File URL: https://www.figma.com/design/KNF6khJCFlopk2BYGz7YZB/NU-Data?node-id=67-296&m=dev
-       - Secrets: FIGMA_CREDENTIALS (email, password, API token)
+       - Use environment variables for authentication
 
 3. For each session:
    - Create a new branch following the format: `devin/$(date +%s)-session-{ID}`
