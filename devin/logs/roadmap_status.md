@@ -17,7 +17,7 @@ NU-DATA-UI is a multi-tenant SaaS platform for contact data enrichment, segmenta
 | R1 | Project Overview & Roadmap | ✅ Complete | G0 | None |
 | X1 | Shared Utilities & Core Framework | ✅ Complete | GX | R1 |
 | I1 | DevOps & Dockerized Local Stack | ✅ In Progress | G0 | R1 |
-| SE1 | Auth & RBAC Control Flow | 🔄 Pending | G2 | R1 |
+| SE1 | Auth & RBAC Control Flow | ✅ In Progress | G2 | R1 |
 | M1 | UI/UX Framework Planning | 🔄 Pending | G1 | R1 |
 | B1 | Backend API Structure & OpenAPI Planning | 🔄 Pending | G1 | R1 |
 | DA1 | PostgreSQL Schema & Multi-Tenant Architecture | 🔄 Pending | G2 | B1 |
