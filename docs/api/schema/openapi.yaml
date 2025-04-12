@@ -1,0 +1,190 @@
+openapi: 3.1.0
+info:
+  title: NU-DATA API
+  version: 1.0.0
+  description: Multi-tenant API for data list management, enrichment, dashboard analytics, and connection control.
+  contact:
+    name: Wesley Burgess
+    email: admin@nudata.co
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: https://api.nudata.co/v1
+    description: Production server
+  - url: https://staging.nudata.co/v1
+    description: Staging server
+  - url: http://localhost:3000/v1
+    description: Local development (Node.js/Express)
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Authentication
+    description: User authentication and session management
+  - name: Dashboard
+    description: Dashboard metrics, activities, and health checks
+  - name: Lists
+    description: Contact list management and operations
+  - name: Enrichment
+    description: Data enrichment plans and execution
+  - name: Data Groups
+    description: Grouping and segmentation of contact data
+  - name: Connections
+    description: External connection management (FTP, Webhooks)
+  - name: Import/Export
+    description: Data import and export operations
+  - name: Access Control
+    description: Blacklist and whitelist management
+  - name: Search
+    description: Search functionality across all data types
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from the /auth/login endpoint
+
+  schemas:
+    Tenant: 
+      $ref: './components/tenant.yaml'
+    User: 
+      $ref: './components/user.yaml'
+    Error: 
+      $ref: './components/error.yaml'
+    List: 
+      $ref: './components/list.yaml'
+    ListEntry: 
+      $ref: './components/list-entry.yaml'
+    ListMetadata: 
+      $ref: './components/list-metadata.yaml'
+    EnrichmentPlan: 
+      $ref: './components/enrichment-plan.yaml'
+    DataGroup: 
+      $ref: './components/data-group.yaml'
+    Connection: 
+      $ref: './components/connection.yaml'
+    ExportJob: 
+      $ref: './components/export-job.yaml'
+    BlacklistItem: 
+      $ref: './components/blacklist-item.yaml'
+    WhitelistItem: 
+      $ref: './components/whitelist-item.yaml'
+    DashboardSummary: 
+      $ref: './components/dashboard-summary.yaml'
+    ActivityLogEntry: 
+      $ref: './components/activity-log-entry.yaml'
+    HealthCheckResult: 
+      $ref: './components/health-check-result.yaml'
+    CampaignSuccessRate: 
+      $ref: './components/campaign-success-rate.yaml'
+    RPCScore: 
+      $ref: './components/rpc-score.yaml'
+    LoginRequest: 
+      $ref: './components/login-request.yaml'
+    LoginResponse: 
+      $ref: './components/login-response.yaml'
+
+paths:
+  /auth/login:
+    $ref: './paths/auth/login.yaml'
+  /auth/logout:
+    $ref: './paths/auth/logout.yaml'
+  /auth/password/reset:
+    $ref: './paths/auth/password-reset.yaml'
+  /auth/password/reset/{token}:
+    $ref: './paths/auth/password-reset-token.yaml'
+
+  /dashboard:
+    $ref: './paths/dashboard/dashboard.yaml'
+  /dashboard/activities:
+    $ref: './paths/dashboard/activities.yaml'
+  /dashboard/healthchecks:
+    $ref: './paths/dashboard/healthchecks.yaml'
+  /dashboard/campaigns:
+    $ref: './paths/dashboard/campaigns.yaml'
+
+  /lists:
+    $ref: './paths/lists/lists.yaml'
+  /lists/{listId}:
+    $ref: './paths/lists/list-by-id.yaml'
+  /lists/{listId}/entries:
+    $ref: './paths/lists/list-entries.yaml'
+  /lists/{listId}/entries/{entryId}:
+    $ref: './paths/lists/list-entry-by-id.yaml'
+  /lists/{listId}/metadata:
+    $ref: './paths/lists/list-metadata.yaml'
+
+  /enrichment-plans:
+    $ref: './paths/enrichment/enrichment-plans.yaml'
+  /enrichment-plans/{planId}:
+    $ref: './paths/enrichment/enrichment-plan-by-id.yaml'
+  /enrichment-plans/{planId}/tasks:
+    $ref: './paths/enrichment/enrichment-plan-tasks.yaml'
+  /enrichment-plans/{planId}/execute:
+    $ref: './paths/enrichment/enrichment-plan-execute.yaml'
+  /enriched-data:
+    $ref: './paths/enrichment/enriched-data.yaml'
+
+  /data-groups:
+    $ref: './paths/data-groups/data-groups.yaml'
+  /data-groups/{groupId}:
+    $ref: './paths/data-groups/data-group-by-id.yaml'
+  /data-groups/{groupId}/entries:
+    $ref: './paths/data-groups/data-group-entries.yaml'
+  /data-groups/auto-generate:
+    $ref: './paths/data-groups/auto-generate.yaml'
+
+  /connections:
+    $ref: './paths/connections/connections.yaml'
+  /connections/{connectionId}:
+    $ref: './paths/connections/connection-by-id.yaml'
+  /connections/{connectionId}/test:
+    $ref: './paths/connections/connection-test.yaml'
+  /connections/types:
+    $ref: './paths/connections/connection-types.yaml'
+
+  /export/jobs:
+    $ref: './paths/export/export-jobs.yaml'
+  /export/jobs/{jobId}:
+    $ref: './paths/export/export-job-by-id.yaml'
+  /export/jobs/{jobId}/status:
+    $ref: './paths/export/export-job-status.yaml'
+  /export/jobs/{jobId}/download:
+    $ref: './paths/export/export-job-download.yaml'
+  /export/formats:
+    $ref: './paths/export/export-formats.yaml'
+  /export/wizard:
+    $ref: './paths/export/export-wizard.yaml'
+
+  /blacklist:
+    $ref: './paths/access-control/blacklist.yaml'
+  /blacklist/{id}:
+    $ref: './paths/access-control/blacklist-by-id.yaml'
+  /blacklist/check:
+    $ref: './paths/access-control/blacklist-check.yaml'
+  /whitelist:
+    $ref: './paths/access-control/whitelist.yaml'
+  /whitelist/{id}:
+    $ref: './paths/access-control/whitelist-by-id.yaml'
+  /whitelist/check:
+    $ref: './paths/access-control/whitelist-check.yaml'
+
+  /search:
+    $ref: './paths/search/search.yaml'
+  /search/lists:
+    $ref: './paths/search/search-lists.yaml'
+  /search/entries:
+    $ref: './paths/search/search-entries.yaml'
+  /search/enrichment-plans:
+    $ref: './paths/search/search-enrichment-plans.yaml'
+  /search/advanced:
+    $ref: './paths/search/search-advanced.yaml'
+  /search/suggestions:
+    $ref: './paths/search/search-suggestions.yaml'
+  /search/recent:
+    $ref: './paths/search/search-recent.yaml'

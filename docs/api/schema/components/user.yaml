@@ -1,0 +1,34 @@
+type: object
+required: [userId, email, tenantId]
+properties:
+  userId:
+    type: integer
+    description: Unique identifier for the user
+    example: 1001
+  email:
+    type: string
+    format: email
+    description: User's email address
+    example: "user@example.com"
+  tenantId:
+    type: integer
+    description: ID of the tenant this user belongs to
+    example: 42
+  firstName:
+    type: string
+    description: User's first name
+    example: "John"
+  lastName:
+    type: string
+    description: User's last name
+    example: "Doe"
+  role:
+    type: string
+    enum: [admin, user, readonly]
+    description: User's role in the system
+    example: "user"
+  lastLogin:
+    type: string
+    format: date-time
+    description: Timestamp of the user's last login
+    example: "2025-04-01T12:00:00Z"

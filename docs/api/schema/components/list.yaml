@@ -1,0 +1,53 @@
+type: object
+required: [listId, listName, listType, tenantId]
+properties:
+  listId:
+    type: integer
+    description: Unique identifier for the list
+    example: 101
+  listName:
+    type: string
+    description: Name of the list
+    example: "Marketing Contacts 2025"
+  listType:
+    type: string
+    enum: [Controlled, Enriched, Outcome]
+    description: Type of list
+    example: "Controlled"
+  importMethod:
+    type: string
+    description: Method used to import the list
+    example: "CSV Upload"
+  enrichmentStatus:
+    type: string
+    enum: [Pending, Processing, Completed, Failed]
+    description: Current enrichment status of the list
+    example: "Pending"
+  metadata:
+    type: object
+    description: Additional metadata for the list
+    example:
+      source: "CRM Export"
+      tags: ["marketing", "2025"]
+  source:
+    type: string
+    description: Source of the list data
+    example: "Manual Upload"
+  tenantId:
+    type: integer
+    description: ID of the tenant this list belongs to
+    example: 42
+  createdAt:
+    type: string
+    format: date-time
+    description: When the list was created
+    example: "2025-04-01T12:00:00Z"
+  updatedAt:
+    type: string
+    format: date-time
+    description: When the list was last updated
+    example: "2025-04-05T15:30:00Z"
+  entryCount:
+    type: integer
+    description: Number of entries in the list
+    example: 1250

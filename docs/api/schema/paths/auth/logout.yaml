@@ -1,0 +1,16 @@
+post:
+  tags: [Authentication]
+  summary: Logout user session
+  description: Invalidates the current user session and JWT token
+  operationId: logoutUser
+  security:
+    - bearerAuth: []
+  responses:
+    '204':
+      description: Logout successful
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/error.yaml'

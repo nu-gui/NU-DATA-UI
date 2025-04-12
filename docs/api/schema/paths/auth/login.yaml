@@ -1,0 +1,30 @@
+post:
+  tags: [Authentication]
+  summary: Authenticate user and get JWT token
+  description: Authenticates a user with email and password, returning a JWT token for API access
+  operationId: loginUser
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/login-request.yaml'
+  responses:
+    '200':
+      description: Authentication successful
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/login-response.yaml'
+    '401':
+      description: Authentication failed
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/error.yaml'
+    '429':
+      description: Too many login attempts
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/error.yaml'
