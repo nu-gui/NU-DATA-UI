@@ -104,11 +104,11 @@ Target users:
 4. `session-se1-nu-data-ui-auth-logic.md` ✅ **Completed**
 5. `session-m1-nu-data-ui-ux-framework.md` ✅ **Completed**
 6. `session-b1-nu-data-ui-api-structure.md` ✅ **Completed**
-7. `session-da1-nu-data-ui-db-schema.md` 🔄 **Pending**
-8. `session-llm1-nu-data-ui-rpc-scoring.md` 🔄 **Pending**
-9. `session-ds1-nu-data-ui-export-insights.md` 🔄 **Pending**
-10. `session-t1-nu-data-ui-testsuite.md` 🔄 **Pending**
-11. `session-d1-nu-data-ui-cicd-pipeline.md` 🔄 **Pending**
+7. `session-da1-nu-data-ui-db-schema.md` ✅ **Completed**
+8. `session-llm1-nu-data-ui-rpc-scoring.md` ✅ **Completed**
+9. `session-ds1-nu-data-ui-export-insights.md` ✅ **Completed**
+10. `session-d1-nu-data-ui-cicd-pipeline.md` 🔄 **Pending**
+11. `session-t1-nu-data-ui-testsuite.md` 🔄 **Pending**
 12. `session-py1-nu-data-ui-enrichment-runner.md` *(planned)*
 13. `session-mw1-nu-data-ui-job-dispatcher.md` *(planned)*
 
