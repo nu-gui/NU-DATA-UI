@@ -1,90 +1,33 @@
 
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
-CREATE SCHEMA IF NOT EXISTS auth;
-CREATE SCHEMA IF NOT EXISTS app;
+\i /docker-entrypoint-initdb.d/migrations/001_initial_schema.sql
+\i /docker-entrypoint-initdb.d/migrations/002_row_level_security.sql
+\i /docker-entrypoint-initdb.d/migrations/003_sample_data.sql
 
-CREATE TABLE IF NOT EXISTS app.tenants (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name VARCHAR(255) NOT NULL,
-  slug VARCHAR(100) NOT NULL UNIQUE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+CREATE OR REPLACE FUNCTION app.set_tenant_context(tenant_uuid UUID)
+RETURNS VOID AS $$
+BEGIN
+  PERFORM set_config('app.current_tenant_id', tenant_uuid::text, false);
+END;
+$$ LANGUAGE plpgsql;
 
-CREATE TABLE IF NOT EXISTS auth.users (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  email VARCHAR(255) NOT NULL UNIQUE,
-  password_hash VARCHAR(255) NOT NULL,
-  first_name VARCHAR(100),
-  last_name VARCHAR(100),
-  role VARCHAR(50) NOT NULL DEFAULT 'user',
-  tenant_id UUID REFERENCES app.tenants(id),
-  is_active BOOLEAN DEFAULT TRUE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+CREATE OR REPLACE FUNCTION app.set_user_context(user_uuid UUID)
+RETURNS VOID AS $$
+BEGIN
+  PERFORM set_config('app.current_user_id', user_uuid::text, false);
+END;
+$$ LANGUAGE plpgsql;
 
-CREATE TABLE IF NOT EXISTS app.lists (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name VARCHAR(255) NOT NULL,
-  description TEXT,
-  tenant_id UUID NOT NULL REFERENCES app.tenants(id),
-  created_by UUID REFERENCES auth.users(id),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+CREATE OR REPLACE FUNCTION app.reset_tenant_context()
+RETURNS VOID AS $$
+BEGIN
+  PERFORM set_config('app.current_tenant_id', NULL, false);
+  PERFORM set_config('app.current_user_id', NULL, false);
+END;
+$$ LANGUAGE plpgsql;
 
-CREATE TABLE IF NOT EXISTS app.list_entries (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  list_id UUID NOT NULL REFERENCES app.lists(id) ON DELETE CASCADE,
-  first_name VARCHAR(100),
-  last_name VARCHAR(100),
-  email VARCHAR(255),
-  phone VARCHAR(50),
-  company VARCHAR(255),
-  address TEXT,
-  city VARCHAR(100),
-  state VARCHAR(50),
-  postal_code VARCHAR(20),
-  country VARCHAR(100),
-  metadata JSONB,
-  enrichment_data JSONB,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+SELECT app.set_tenant_context('11111111-1111-1111-1111-111111111111');
+SELECT app.set_user_context('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa');
+SELECT * FROM app.lists; -- Should only see lists for tenant 11111111-1111-1111-1111-111111111111
 
-CREATE TABLE IF NOT EXISTS app.enrichment_plans (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name VARCHAR(255) NOT NULL,
-  description TEXT,
-  tenant_id UUID NOT NULL REFERENCES app.tenants(id),
-  configuration JSONB NOT NULL,
-  created_by UUID REFERENCES auth.users(id),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS app.connections (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name VARCHAR(255) NOT NULL,
-  type VARCHAR(50) NOT NULL, -- 'sftp', 'webhook'
-  tenant_id UUID NOT NULL REFERENCES app.tenants(id),
-  configuration JSONB NOT NULL,
-  created_by UUID REFERENCES auth.users(id),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
-INSERT INTO app.tenants (id, name, slug) VALUES 
-  ('11111111-1111-1111-1111-111111111111', 'Demo Company', 'demo-company');
-
-INSERT INTO auth.users (id, email, password_hash, first_name, last_name, role, tenant_id) VALUES 
-  ('22222222-2222-2222-2222-222222222222', 'admin@example.com', crypt('password', gen_salt('bf')), 'Admin', 'User', 'admin', '11111111-1111-1111-1111-111111111111');
-
-CREATE INDEX idx_list_entries_list_id ON app.list_entries(list_id);
-CREATE INDEX idx_lists_tenant_id ON app.lists(tenant_id);
-CREATE INDEX idx_users_tenant_id ON auth.users(tenant_id);
-CREATE INDEX idx_enrichment_plans_tenant_id ON app.enrichment_plans(tenant_id);
-CREATE INDEX idx_connections_tenant_id ON app.connections(tenant_id);
+SELECT app.reset_tenant_context();
