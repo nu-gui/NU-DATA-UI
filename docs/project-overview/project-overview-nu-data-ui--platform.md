@@ -13,7 +13,21 @@ The NU DATA UI system is a **multi-tenant SaaS platform** designed to centralize
 
 ---
 
-### 2. **Dashboard**
+### 2. **Admin Portal** (Phase 2)
+- **Tenant Management**: Create and configure multi-tenant environments
+- **User Management**: Manage user accounts, roles, and permissions
+- **System Settings**: Configure global platform settings
+- **Notification Settings**: Manage system notifications and alerts
+- **Access Control**: Define permission structures and security policies
+- **Billing & Subscription**: Manage tenant payment plans and usage quotas
+- **Audit Logging**: Track and review administrative actions
+- **Tenant Migration**: Move data between tenants or environments
+- **White-labeling**: Customize UI appearance for each tenant
+- **API Monitoring**: Track tenant resource consumption and API usage
+
+---
+
+### 3. **Dashboard**
 - Central widget system showing:
   - Data Health Checks
   - Campaign Success Rates
@@ -24,7 +38,7 @@ The NU DATA UI system is a **multi-tenant SaaS platform** designed to centralize
 
 ---
 
-### 3. **List Management**
+### 4. **List Management**
 **Three key subpages:**
 - **Controlled Data Lists** – Source (raw) imports
 - **Enriched Data Lists** – Post-processing results
@@ -39,7 +53,7 @@ The NU DATA UI system is a **multi-tenant SaaS platform** designed to centralize
 
 ---
 
-### 4. **Data Enrichment Plans**
+### 5. **Data Enrichment Plans**
 - Wizard-based workflow:
   1. Plan Setup
   2. Pre-Processing Tasks
@@ -57,7 +71,7 @@ The NU DATA UI system is a **multi-tenant SaaS platform** designed to centralize
 
 ---
 
-### 5. **Data Groups**
+### 6. **Data Groups**
 - User-created or system-generated (auto) groups:
   - **Manual**: Filtered by date, tag, enrichment plan, phone number DCode
   - **Auto**: 
@@ -68,7 +82,7 @@ The NU DATA UI system is a **multi-tenant SaaS platform** designed to centralize
 
 ---
 
-### 6. **Connections**
+### 7. **Connections**
 - Supports creating Import/Export connections using:
   - **Webhook**
   - **Secure FTP**
@@ -80,7 +94,7 @@ The NU DATA UI system is a **multi-tenant SaaS platform** designed to centralize
 
 ---
 
-### 7. **Import / Export**
+### 8. **Import / Export**
 - Supports:
   - File uploads (manual or FTP)
   - API-based imports
@@ -95,7 +109,7 @@ The NU DATA UI system is a **multi-tenant SaaS platform** designed to centralize
 
 ---
 
-### 8. **He-Man Search**
+### 9. **He-Man Search**
 - Federated search across:
   - Lists
   - Tags
@@ -106,7 +120,7 @@ The NU DATA UI system is a **multi-tenant SaaS platform** designed to centralize
 
 ---
 
-### 9. **User & Admin Settings**
+### 10. **User & Admin Settings**
 - Second sidebar with:
   - Subscription management
   - Credit usage
@@ -204,4 +218,4 @@ Please go ahead and send me your planned **task list for app.devin.ai** so I can
 - Organize GitHub-ready folders & CI/CD flows
 - Break up roadmap into execution cycles (e.g., B1–B10)
 
-Ready when you are. Let’s build this 🔥
+Ready when you are. Let's build this 🔥
