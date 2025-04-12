@@ -1,0 +1,51 @@
+type: object
+required: [groupId, groupName, tenantId]
+properties:
+  groupId:
+    type: integer
+    description: Unique identifier for the data group
+    example: 301
+  groupName:
+    type: string
+    description: Name of the data group
+    example: "High-Value Customers"
+  groupType:
+    type: string
+    enum: [Manual, Auto, Smart]
+    description: Type of data group
+    example: "Manual"
+  criteria:
+    type: object
+    description: Criteria used to define the group (for Auto and Smart groups)
+    example:
+      field: "data.purchaseValue"
+      operator: ">"
+      value: 1000
+  tenantId:
+    type: integer
+    description: ID of the tenant this group belongs to
+    example: 42
+  createdAt:
+    type: string
+    format: date-time
+    description: When the group was created
+    example: "2025-03-20T14:30:00Z"
+  updatedAt:
+    type: string
+    format: date-time
+    description: When the group was last updated
+    example: "2025-04-01T12:00:00Z"
+  entryCount:
+    type: integer
+    description: Number of entries in the group
+    example: 250
+  description:
+    type: string
+    description: Detailed description of the group
+    example: "Group containing customers with purchase value over $1000"
+  tags:
+    type: array
+    description: Tags associated with this group
+    items:
+      type: string
+    example: ["high-value", "priority"]

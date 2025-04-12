@@ -1,0 +1,63 @@
+type: object
+required: [jobId, jobName, status, tenantId]
+properties:
+  jobId:
+    type: integer
+    description: Unique identifier for the export job
+    example: 501
+  jobName:
+    type: string
+    description: Name of the export job
+    example: "Weekly Customer Export"
+  status:
+    type: string
+    enum: [Queued, Processing, Completed, Failed, Cancelled]
+    description: Current status of the export job
+    example: "Processing"
+  createdAt:
+    type: string
+    format: date-time
+    description: When the job was created
+    example: "2025-04-05T15:30:00Z"
+  completedAt:
+    type: string
+    format: date-time
+    nullable: true
+    description: When the job was completed
+    example: "2025-04-05T15:35:00Z"
+  exportType:
+    type: string
+    enum: [CSV, JSON, XLSX, XML]
+    description: Format of the export
+    example: "CSV"
+  connectionId:
+    type: integer
+    description: ID of the connection to use for the export
+    example: 401
+  listIds:
+    type: array
+    description: IDs of the lists to export
+    items:
+      type: integer
+    example: [101, 102]
+  recordCount:
+    type: integer
+    nullable: true
+    description: Number of records exported
+    example: 1250
+  tenantId:
+    type: integer
+    description: ID of the tenant this job belongs to
+    example: 42
+  progress:
+    type: number
+    format: float
+    minimum: 0
+    maximum: 1
+    description: Export progress (0-1)
+    example: 0.65
+  errorMessage:
+    type: string
+    nullable: true
+    description: Error message if the job failed
+    example: "Connection timeout"

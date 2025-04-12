@@ -1,0 +1,61 @@
+type: object
+required: [planId, planName, tenantId]
+properties:
+  planId:
+    type: integer
+    description: Unique identifier for the enrichment plan
+    example: 201
+  planName:
+    type: string
+    description: Name of the enrichment plan
+    example: "Standard Enrichment"
+  preProcessingTasks:
+    type: array
+    description: Tasks to perform before enrichment
+    items:
+      type: string
+      enum: [deduplication, validation, normalization, formatting]
+    example: ["deduplication", "validation"]
+  processingTasks:
+    type: array
+    description: Core enrichment tasks
+    items:
+      type: string
+      enum: [name_matching, address_verification, phone_validation, email_verification, company_lookup]
+    example: ["name_matching", "address_verification"]
+  postProcessingTasks:
+    type: array
+    description: Tasks to perform after enrichment
+    items:
+      type: string
+      enum: [scoring, grouping, tagging, filtering]
+    example: ["scoring", "grouping"]
+  exportConnectionId:
+    type: integer
+    description: ID of the connection to use for exporting results
+    example: 301
+  tenantId:
+    type: integer
+    description: ID of the tenant this plan belongs to
+    example: 42
+  createdAt:
+    type: string
+    format: date-time
+    description: When the plan was created
+    example: "2025-03-15T10:00:00Z"
+  updatedAt:
+    type: string
+    format: date-time
+    description: When the plan was last updated
+    example: "2025-04-01T12:00:00Z"
+  matchThreshold:
+    type: number
+    format: float
+    minimum: 0
+    maximum: 1
+    description: Minimum match score to consider a match valid (0-1)
+    example: 0.7
+  description:
+    type: string
+    description: Detailed description of the enrichment plan
+    example: "Standard enrichment plan with name matching and address verification"

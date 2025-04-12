@@ -1,0 +1,55 @@
+type: object
+required: [connectionId, connectionName, connectionType, tenantId]
+properties:
+  connectionId:
+    type: integer
+    description: Unique identifier for the connection
+    example: 401
+  connectionName:
+    type: string
+    description: Name of the connection
+    example: "Marketing CRM FTP"
+  connectionType:
+    type: string
+    enum: [FTP, SFTP, Webhook, API, S3, Database]
+    description: Type of connection
+    example: "FTP"
+  credentials:
+    type: object
+    description: Connection credentials (encrypted in storage)
+    example:
+      host: "ftp.example.com"
+      username: "user"
+      password: "encrypted-password"
+      port: 21
+  settings:
+    type: object
+    description: Connection-specific settings
+    example:
+      passive: true
+      timeout: 30
+      retries: 3
+  tenantId:
+    type: integer
+    description: ID of the tenant this connection belongs to
+    example: 42
+  createdAt:
+    type: string
+    format: date-time
+    description: When the connection was created
+    example: "2025-03-15T10:00:00Z"
+  updatedAt:
+    type: string
+    format: date-time
+    description: When the connection was last updated
+    example: "2025-04-01T12:00:00Z"
+  lastTestedAt:
+    type: string
+    format: date-time
+    description: When the connection was last tested
+    example: "2025-04-05T15:30:00Z"
+  status:
+    type: string
+    enum: [Active, Inactive, Failed]
+    description: Current status of the connection
+    example: "Active"

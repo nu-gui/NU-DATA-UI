@@ -1,0 +1,14 @@
+type: object
+required: [token]
+properties:
+  token:
+    type: string
+    description: JWT token for authentication
+    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwMDEsImVtYWlsIjoidXNlckBleGFtcGxlLmNvbSIsInRlbmFudElkIjo0Miwicm9sZSI6InVzZXIiLCJpYXQiOjE2MTcyODIxMTIsImV4cCI6MTYxNzM2ODUxMn0.Tj7jUXYV1WjTnpbJsQQkqzMnVXHXEMPJpRORHLQbAbc"
+  expiresAt:
+    type: string
+    format: date-time
+    description: When the token expires
+    example: "2025-04-02T12:00:00Z"
+  user:
+    $ref: './user.yaml'

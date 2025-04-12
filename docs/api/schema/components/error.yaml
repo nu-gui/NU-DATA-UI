@@ -1,0 +1,21 @@
+type: object
+required: [code, message]
+properties:
+  code:
+    type: integer
+    description: HTTP status code
+    example: 400
+  message:
+    type: string
+    description: Error message
+    example: "Invalid input parameters"
+  details:
+    type: object
+    description: Additional error details
+    example:
+      field: "email"
+      reason: "Must be a valid email address"
+  requestId:
+    type: string
+    description: Unique identifier for the request (for support)
+    example: "req_12345abcde"

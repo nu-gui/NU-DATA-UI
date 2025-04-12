@@ -1,0 +1,97 @@
+get:
+  tags: [Lists]
+  summary: Get all lists
+  description: Retrieves all lists for the authenticated user's tenant
+  operationId: getLists
+  security:
+    - bearerAuth: []
+  parameters:
+    - name: limit
+      in: query
+      description: Maximum number of lists to return
+      schema:
+        type: integer
+        default: 25
+    - name: offset
+      in: query
+      description: Number of lists to skip
+      schema:
+        type: integer
+        default: 0
+    - name: sort
+      in: query
+      description: Field to sort by
+      schema:
+        type: string
+        enum: [listName, createdAt, updatedAt, entryCount]
+        default: createdAt
+    - name: order
+      in: query
+      description: Sort order
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: desc
+  responses:
+    '200':
+      description: Lists retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              lists:
+                type: array
+                items:
+                  $ref: '../../components/list.yaml'
+              total:
+                type: integer
+                description: Total number of lists
+                example: 42
+              limit:
+                type: integer
+                description: Maximum number of lists returned
+                example: 25
+              offset:
+                type: integer
+                description: Number of lists skipped
+                example: 0
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/error.yaml'
+
+post:
+  tags: [Lists]
+  summary: Create a new list
+  description: Creates a new list for the authenticated user's tenant
+  operationId: createList
+  security:
+    - bearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/list.yaml'
+  responses:
+    '201':
+      description: List created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/list.yaml'
+    '400':
+      description: Invalid input
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/error.yaml'
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/error.yaml'

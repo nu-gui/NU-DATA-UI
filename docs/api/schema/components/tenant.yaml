@@ -1,0 +1,40 @@
+type: object
+required: [tenantId, tenantName]
+properties:
+  tenantId:
+    type: integer
+    description: Unique identifier for the tenant
+    example: 42
+  tenantName:
+    type: string
+    description: Name of the tenant organization
+    example: "Acme Corporation"
+  status:
+    type: string
+    enum: [active, inactive, suspended]
+    description: Current status of the tenant
+    example: "active"
+  createdAt:
+    type: string
+    format: date-time
+    description: When the tenant was created
+    example: "2025-01-15T09:30:00Z"
+  settings:
+    type: object
+    description: Tenant-specific settings
+    properties:
+      maxUsers:
+        type: integer
+        description: Maximum number of users allowed
+        example: 50
+      maxLists:
+        type: integer
+        description: Maximum number of lists allowed
+        example: 100
+      features:
+        type: array
+        description: Enabled features for this tenant
+        items:
+          type: string
+          enum: [enrichment, export, advanced_search, webhooks]
+        example: ["enrichment", "export"]

@@ -1,0 +1,59 @@
+type: object
+required: [scoreId, entryId, score, tenantId]
+properties:
+  scoreId:
+    type: integer
+    description: Unique identifier for the RPC score
+    example: 601
+  entryId:
+    type: integer
+    description: ID of the list entry this score belongs to
+    example: 5001
+  score:
+    type: number
+    format: float
+    minimum: 0
+    maximum: 1
+    description: RPC (Relative Probability of Contact) score (0-1)
+    example: 0.85
+  confidence:
+    type: number
+    format: float
+    minimum: 0
+    maximum: 1
+    description: Confidence level of the score (0-1)
+    example: 0.92
+  factors:
+    type: array
+    description: Factors that contributed to the score
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the factor
+          example: "email_deliverability"
+        weight:
+          type: number
+          format: float
+          description: Weight of this factor in the score
+          example: 0.3
+        value:
+          type: number
+          format: float
+          description: Value of this factor (0-1)
+          example: 0.75
+  tenantId:
+    type: integer
+    description: ID of the tenant this score belongs to
+    example: 42
+  createdAt:
+    type: string
+    format: date-time
+    description: When the score was created
+    example: "2025-04-01T12:00:00Z"
+  updatedAt:
+    type: string
+    format: date-time
+    description: When the score was last updated
+    example: "2025-04-05T15:30:00Z"

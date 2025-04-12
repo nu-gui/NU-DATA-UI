@@ -1,0 +1,110 @@
+get:
+  tags: [Import/Export]
+  summary: Get all export jobs
+  description: Retrieves all export jobs for the authenticated user's tenant
+  operationId: getExportJobs
+  security:
+    - bearerAuth: []
+  parameters:
+    - name: limit
+      in: query
+      description: Maximum number of jobs to return
+      schema:
+        type: integer
+        default: 25
+    - name: offset
+      in: query
+      description: Number of jobs to skip
+      schema:
+        type: integer
+        default: 0
+    - name: status
+      in: query
+      description: Filter by job status
+      schema:
+        type: string
+        enum: [Queued, Processing, Completed, Failed, Cancelled]
+  responses:
+    '200':
+      description: Export jobs retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              jobs:
+                type: array
+                items:
+                  $ref: '../../components/export-job.yaml'
+              total:
+                type: integer
+                description: Total number of jobs
+                example: 42
+              limit:
+                type: integer
+                description: Maximum number of jobs returned
+                example: 25
+              offset:
+                type: integer
+                description: Number of jobs skipped
+                example: 0
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/error.yaml'
+
+post:
+  tags: [Import/Export]
+  summary: Create a new export job
+  description: Creates a new export job for the authenticated user's tenant
+  operationId: createExportJob
+  security:
+    - bearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required: [listIds, exportType]
+          properties:
+            jobName:
+              type: string
+              description: Name of the export job
+              example: "Weekly Customer Export"
+            listIds:
+              type: array
+              description: IDs of the lists to export
+              items:
+                type: integer
+              example: [101, 102]
+            exportType:
+              type: string
+              enum: [CSV, JSON, XLSX, XML]
+              description: Format of the export
+              example: "CSV"
+            connectionId:
+              type: integer
+              description: ID of the connection to use for the export
+              example: 401
+  responses:
+    '201':
+      description: Export job created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/export-job.yaml'
+    '400':
+      description: Invalid input
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/error.yaml'
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/error.yaml'

@@ -1,0 +1,44 @@
+type: object
+required: [entryId, listId, data, tenantId]
+properties:
+  entryId:
+    type: integer
+    description: Unique identifier for the entry
+    example: 5001
+  listId:
+    type: integer
+    description: ID of the list this entry belongs to
+    example: 101
+  data:
+    type: object
+    description: The actual data for this entry
+    example:
+      name: "John Doe"
+      email: "john@example.com"
+      phone: "+1234567890"
+  tenantId:
+    type: integer
+    description: ID of the tenant this entry belongs to
+    example: 42
+  createdAt:
+    type: string
+    format: date-time
+    description: When the entry was created
+    example: "2025-04-01T12:00:00Z"
+  updatedAt:
+    type: string
+    format: date-time
+    description: When the entry was last updated
+    example: "2025-04-05T15:30:00Z"
+  enrichmentStatus:
+    type: string
+    enum: [Not Enriched, Enriched, Failed]
+    description: Enrichment status of this entry
+    example: "Enriched"
+  matchScore:
+    type: number
+    format: float
+    minimum: 0
+    maximum: 1
+    description: Match confidence score (0-1)
+    example: 0.85
