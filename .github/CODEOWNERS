@@ -1,0 +1,10 @@
+# Default owners for everything
+*       @wes
+
+# Specific owners for frontend
+/src/components/   @wes
+/src/pages/        @wes
+
+# Specific owners for backend
+/src/api/          @wes
+/src/services/     @wes

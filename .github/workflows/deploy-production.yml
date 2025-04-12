@@ -1,0 +1,32 @@
+name: Deploy to Production
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 15
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Deploy to production
+      run: |
+        echo "Deploying to production environment"
+        # Here you would include commands to deploy to your production server
+        # For example, updating docker-compose.yml with latest image tags
+        # and running docker-compose up -d on the production server
+      env:
+        PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
+        PRODUCTION_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
+        PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
