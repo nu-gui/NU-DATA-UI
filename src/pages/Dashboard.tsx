@@ -1,13 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PageContainer from '../components/layout/PageContainer';
+import { StateTransition } from '../components/animations/StateTransition';
+import { MicroInteraction } from '../components/animations/MicroInteraction';
+import Widget from '../components/elements/Widget';
 
 const Dashboard: React.FC = () => {
+  const [isLoading, setIsLoading] = useState({
+    metrics: false,
+    activity: false,
+    actions: false
+  });
+
+  const refreshWidget = (widgetName: 'metrics' | 'activity' | 'actions') => {
+    setIsLoading({ ...isLoading, [widgetName]: true });
+    
+    setTimeout(() => {
+      setIsLoading({ ...isLoading, [widgetName]: false });
+    }, 1500);
+  };
+
   return (
     <PageContainer title="Dashboard Overview">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Metrics Widget */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <h3 className="text-lg font-medium text-gray-800 mb-4">Key Metrics</h3>
+        <Widget 
+          title="Key Metrics" 
+          isLoading={isLoading.metrics}
+          onRefresh={() => refreshWidget('metrics')}
+        >
           <div className="space-y-4">
             <div>
               <div className="flex justify-between items-center mb-1">
@@ -37,11 +57,14 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        </Widget>
 
         {/* Recent Activity Widget */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <h3 className="text-lg font-medium text-gray-800 mb-4">Recent Activity</h3>
+        <Widget 
+          title="Recent Activity" 
+          isLoading={isLoading.activity}
+          onRefresh={() => refreshWidget('activity')}
+        >
           <div className="space-y-4">
             <div className="flex items-start">
               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-500">
@@ -71,35 +94,44 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        </Widget>
 
         {/* Quick Actions Widget */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <h3 className="text-lg font-medium text-gray-800 mb-4">Quick Actions</h3>
+        <Widget 
+          title="Quick Actions" 
+          isLoading={isLoading.actions}
+          onRefresh={() => refreshWidget('actions')}
+        >
           <div className="space-y-3">
-            <button className="w-full flex items-center justify-between p-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg">
-              <span className="flex items-center">
-                <span className="text-blue-500 mr-3">📋</span>
-                <span className="text-sm font-medium">Create New List</span>
-              </span>
-              <span className="text-gray-400">→</span>
-            </button>
-            <button className="w-full flex items-center justify-between p-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg">
-              <span className="flex items-center">
-                <span className="text-green-500 mr-3">🔄</span>
-                <span className="text-sm font-medium">Start Enrichment</span>
-              </span>
-              <span className="text-gray-400">→</span>
-            </button>
-            <button className="w-full flex items-center justify-between p-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg">
-              <span className="flex items-center">
-                <span className="text-purple-500 mr-3">📤</span>
-                <span className="text-sm font-medium">Export Data</span>
-              </span>
-              <span className="text-gray-400">→</span>
-            </button>
+            <MicroInteraction type="both">
+              <button className="w-full flex items-center justify-between p-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg">
+                <span className="flex items-center">
+                  <span className="text-blue-500 mr-3">📋</span>
+                  <span className="text-sm font-medium">Create New List</span>
+                </span>
+                <span className="text-gray-400">→</span>
+              </button>
+            </MicroInteraction>
+            <MicroInteraction type="both">
+              <button className="w-full flex items-center justify-between p-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg">
+                <span className="flex items-center">
+                  <span className="text-green-500 mr-3">🔄</span>
+                  <span className="text-sm font-medium">Start Enrichment</span>
+                </span>
+                <span className="text-gray-400">→</span>
+              </button>
+            </MicroInteraction>
+            <MicroInteraction type="both">
+              <button className="w-full flex items-center justify-between p-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg">
+                <span className="flex items-center">
+                  <span className="text-purple-500 mr-3">📤</span>
+                  <span className="text-sm font-medium">Export Data</span>
+                </span>
+                <span className="text-gray-400">→</span>
+              </button>
+            </MicroInteraction>
           </div>
-        </div>
+        </Widget>
       </div>
     </PageContainer>
   );

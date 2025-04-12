@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { MicroInteraction } from '../animations/MicroInteraction';
 
 interface SidebarMenuProps {
   isOpen: boolean;
@@ -42,15 +43,17 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ isOpen, toggleSidebar }) => {
         <ul>
           {menuItems.map((item) => (
             <li key={item.path} className="mb-2 px-4">
-              <NavLink 
-                to={item.path}
-                className={({ isActive }) => 
-                  `sidebar-link ${isActive ? 'active' : ''} ${!isOpen ? 'justify-center' : ''}`
-                }
-              >
-                <span className="mr-3">{item.icon}</span>
-                {isOpen && <span>{item.name}</span>}
-              </NavLink>
+              <MicroInteraction type="hover">
+                <NavLink 
+                  to={item.path}
+                  className={({ isActive }) => 
+                    `sidebar-link ${isActive ? 'active' : ''} ${!isOpen ? 'justify-center' : ''}`
+                  }
+                >
+                  <span className="mr-3">{item.icon}</span>
+                  {isOpen && <span>{item.name}</span>}
+                </NavLink>
+              </MicroInteraction>
             </li>
           ))}
         </ul>

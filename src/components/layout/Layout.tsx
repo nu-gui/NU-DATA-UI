@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import SidebarMenu from './SidebarMenu';
 import TopHeader from './TopHeader';
+import { PageTransition } from '../animations/PageTransition';
 
 interface LayoutProps {
   title?: string;
@@ -13,6 +14,7 @@ const Layout: React.FC<LayoutProps> = ({
   breadcrumbs = [{ name: 'Home', path: '/' }] 
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const location = useLocation();
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -26,7 +28,9 @@ const Layout: React.FC<LayoutProps> = ({
         <TopHeader title={title} breadcrumbs={breadcrumbs} />
         
         <main className="flex-1 overflow-y-auto p-4">
-          <Outlet />
+          <PageTransition transitionKey={location.pathname} animation="fadeIn">
+            <Outlet />
+          </PageTransition>
         </main>
       </div>
     </div>
