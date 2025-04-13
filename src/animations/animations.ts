@@ -75,11 +75,11 @@ const baseAnimations = {
   },
   successState: {
     initial: { backgroundColor: 'transparent' },
-    animate: { backgroundColor: '#d1fae5' }, // TODO: Use theme colors later if possible
+    animate: { backgroundColor: 'var(--color-success-100)' }, // Using CSS variable for theme color
   },
   errorState: {
     initial: { backgroundColor: 'transparent' },
-    animate: { backgroundColor: '#fee2e2' }, // TODO: Use theme colors later if possible
+    animate: { backgroundColor: 'var(--color-error-100)' }, // Using CSS variable for theme color
   },
   emptyState: {
     initial: { opacity: 0 },
