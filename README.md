@@ -43,6 +43,18 @@ NU-DATA-UI/
 └── README.md                 # This file
 ```
 
+
+## Animation System
+The NU-DATA-UI application utilizes a responsive and accessible animation system built primarily with Framer Motion. Key aspects include:
+
+- **`ResponsiveAnimation.tsx`**: A wrapper component (<ref_file file="/home/ubuntu/repos/NU-DATA-UI/src/components/animations/ResponsiveAnimation.tsx" />) used to apply consistent entry animations to UI elements like Cards, Widgets, and Page Containers.
+- **Centralized Definitions**: Core animation variants (fade, slide, scale) are defined in <ref_file file="/home/ubuntu/repos/NU-DATA-UI/src/animations/animations.ts" /> and easing curves are managed in <ref_file file="/home/ubuntu/repos/NU-DATA-UI/src/animations/easings.ts" />. These definitions leverage functions like `getAnimations` to provide motion-aware variants.
+- **Responsiveness**: Animations adapt to different screen sizes using the <ref_file file="/home/ubuntu/repos/NU-DATA-UI/src/hooks/useMediaQuery.ts" /> hook. Durations and delays may be adjusted for mobile and tablet views.
+- **Accessibility**: The system respects user preferences for reduced motion via the <ref_file file="/home/ubuntu/repos/NU-DATA-UI/src/hooks/useReducedMotion.ts" /> hook, which disables or minimizes animations when requested.
+- **State Transitions**: The <ref_file file="/home/ubuntu/repos/NU-DATA-UI/src/components/animations/StateTransition.tsx" /> component handles animated transitions between different component states (e.g., loading, idle, error).
+- **GSAP**: While Framer Motion is the primary tool, GSAP may be used for more complex timeline-based animations if required in specific components.
+- **Tailwind Integration**: Animation properties aim to align with design tokens defined in the `nu-data-design` repository, although direct Tailwind CSS keyframe animations have been removed in favor of JavaScript-based animations for better control and accessibility integration.
+
 ## Getting Started
 *Development setup instructions will be added in future sessions*
 
