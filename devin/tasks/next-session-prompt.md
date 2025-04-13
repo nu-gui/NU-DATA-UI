@@ -1,89 +1,55 @@
-# 🧠 Devin AI Session – Phase 1 Continuation
+# 🎞️ Session ANIM-2 – Addressing Placeholders and Next Steps
 
-## 🧱 Repository Context
+⚡ Session 3: (To be determined based on priorities)
+Repository: nu-gui/NU-DATA-UI
 
-```yaml
-metadata:
-  repo_primary: NU-DATA-UI (https://github.com/nu-gui/NU-DATA-UI)
-  repo_secondary: nu-data-design (https://github.com/nu-gui/nu-data-design)
-  purpose: Full-stack SaaS platform for contact data enrichment, segmentation, and analytics
-  tech_stack:
-    - React.js (Frontend)
-    - Node.js / Python (Backend services)
-    - PostgreSQL (Database)
-    - OpenAPI 3.1 (API Spec)
-    - FTP / Webhooks (Integration Layer)
-    - CI/CD: GitHub Actions
-```
+## 🎯 Previous Session Summary (ANIM-1)
+- **Objective:** Integrate responsive, accessible animations using `ResponsiveAnimation.tsx`.
+- **Branch:** `feat/anim1-responsive-animation`
+- **Pull Request:** <https://github.com/nu-gui/NU-DATA-UI/pull/82>
+- **Key Outcomes:**
+    - Integrated `ResponsiveAnimation` wrapper into core layout and surface components (`Card`, `PageContainer`, `Widget`, `DashboardCard`, `ExportAnalyticsDashboard`).
+    - Centralized animation logic in `animations.ts` and `easings.ts`.
+    - Implemented `useReducedMotion` and updated `useMediaQuery` for accessibility and responsiveness.
+    - Updated `StateTransition` and `PageTransition` to use the new system.
+    - Removed legacy Tailwind keyframe animations.
+    - Created initial documentation (`README.md`, `CHANGES.md`, `devin/logs/AI-Task-History.md`).
+    - Scanned for placeholder code and documented findings in <ref_file file="/home/ubuntu/repos/NU-DATA-UI/devin/tasks/task-backlog.md" />.
 
-## 🏁 Objectives
+## 🧠 Current State & Backlog
+- PR #82 contains the completed animation integration work and is ready for review.
+- The <ref_file file="/home/ubuntu/repos/NU-DATA-UI/devin/tasks/task-backlog.md" /> outlines several areas with placeholder code or TODOs:
+    - Mock user service in `auth.controller.ts`.
+    - Hardcoded theme colors in `animations.ts`.
+    - Potential dependency/type definition issues (`@types/node`, `crypto`, `jsonwebtoken`, `bcrypt`, `express`, `framer-motion`).
 
-Continue Phase 1 of NU-DATA-UI by executing the remaining sessions in order:
+## 🚀 Next Session Objectives (Suggestions - Prioritize with User)
 
-1. **Session D1** - CI/CD GitHub Actions Setup
-2. **Session T1** - Test Suite & Coverage Strategy
+**Option 1: Address High-Priority Placeholders**
+- **Focus:** Resolve critical placeholder implementations identified in the backlog.
+- **Tasks:**
+    - Replace mock user service in `auth.controller.ts` with actual service integration (requires backend coordination).
+    - Resolve missing type definitions and dependencies to ensure clean builds and type checking.
 
-## 🔧 Execution Instructions
+**Option 2: Continue Animation Integration**
+- **Focus:** Apply animations to remaining priority components identified in the initial ANIM-1 prompt.
+- **Tasks:**
+    - Integrate `ResponsiveAnimation` or `StateTransition` into:
+        - `StatusCard.tsx`
+        - `QuickActions.tsx`
+        - `ActivityFeed.tsx`
+        - `SearchResults.tsx`
+        - `Chart.tsx` (focus on `StateTransition` for data updates)
+    - Refine existing animations based on feedback from PR #82 review.
 
-1. Start by syncing with the main branch:
-   ```bash
-   cd NU-DATA-UI
-   git checkout main
-   git pull origin main
-   ```
-   - Check repository for dependencies files and install all dependencies before continuing with your task.
-   - Create a new working branch from the GitHub remote 'main' branch before continuing with your session planning
+**Option 3: Theme Integration for Animations**
+- **Focus:** Connect animation states (success/error) to the application's theme.
+- **Tasks:**
+    - Investigate how theme colors are managed (e.g., CSS variables, Tailwind theme config).
+    - Update `animations.ts` to use theme tokens instead of hardcoded colors.
 
-2. Read all documentation to understand the current state:
-   - Review all files in `docs/` directory
-   - Check GitHub issues at https://github.com/nu-gui/NU-DATA-UI/issues
-   - Review previous work in `devin/` directory
-   - Examine the roadmap status in `devin/logs/roadmap_status.md`
-   - Review completed sessions in `docs/session-series/phase-1/archive/`
-   - Start implementing the next session-ID tasks detailed in the roadmap documents
-   - Fix all known issues, code quality issues before ending session 
-   - Access the Design Repo when needed to ensure that the design and development are in sync with each other
-   - Figma Design Access: 
-       - Figma File URL: https://www.figma.com/design/KNF6khJCFlopk2BYGz7YZB/NU-Data?node-id=67-296&m=dev
-       - Use environment variables for authentication
-
-3. For each session:
-   - Create a new branch following the format: `devin/$(date +%s)-session-{ID}`
-   - Implement the session tasks
-   - Create a PR and wait for user to merge
-   - After the user merges the PR, make sure to sync with remote 'main' branch before starting the next session
-   - Update GitHub issues and milestones after each session has completed
-
-4. After completing each session:
-   - Archive completed session files to `docs/session-series/phase-1/archive/`
-   - Update `docs/session-series/phase-1/session-r1-nu-data-ui-roadmap.md`
-   - Update task tracking files in `devin/` directory
-   - Update and maintain dependencies files for the project
-
-## 📌 Finalize Each Session
-
-- Update GitHub 'issues' with appropriate labels and milestones
-- Commit all changes including updated task tracking files
-- Wait for user instructions before proceeding to the next session
-- If the user tells you to prepare for the next session, please prepare the next session prompt and share the message in the chat, no need to create a new file for the next session prompt
-
-## 📋 Session D1 - CI/CD GitHub Actions Setup
-
-Focus on implementing a comprehensive CI/CD pipeline using GitHub Actions:
-- Set up workflows for linting, testing, and building
-- Configure deployment pipelines for staging and production
-- Implement automated testing for both frontend and backend
-- Set up Docker image building and publishing
-- Configure environment-specific variables and secrets
-
-## 📋 Session T1 - Test Suite & Coverage Strategy
-
-After completing Session D1, implement a comprehensive testing strategy:
-- Set up unit testing for frontend and backend components
-- Implement integration tests for API endpoints
-- Create end-to-end tests for critical user flows
-- Configure code coverage reporting
-- Set up test fixtures and mocks
-- Integrate testing with the CI/CD pipeline
-
-You only need to look in the following repos: nu-gui/NU-DATA-UI, nu-gui/nu-data-design
+## ⚙️ Setup for Next Session
+1.  Sync local `main` branch with the remote repository (`git checkout main && git pull origin main`).
+2.  Create a new feature branch for the session (e.g., `git checkout -b feat/anim2-placeholder-fixes` or similar based on chosen focus).
+3.  Review the latest `main` branch and any feedback on PR #82.
+4.  Confirm the primary objective for this session with the user.
