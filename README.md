@@ -54,6 +54,19 @@ The NU-DATA-UI application utilizes a responsive and accessible animation system
 - **State Transitions**: The <ref_file file="/home/ubuntu/repos/NU-DATA-UI/src/components/animations/StateTransition.tsx" /> component handles animated transitions between different component states (e.g., loading, idle, error).
 - **GSAP**: While Framer Motion is the primary tool, GSAP may be used for more complex timeline-based animations if required in specific components.
 - **Tailwind Integration**: Animation properties aim to align with design tokens defined in the `nu-data-design` repository, although direct Tailwind CSS keyframe animations have been removed in favor of JavaScript-based animations for better control and accessibility integration.
+- **Theme Integration**: Animation states (success/error) use CSS variables that connect to the application's theme system, ensuring consistent styling across components.
+
+### Animation Components
+
+The animation system includes the following animated components:
+
+- **StatusCard**: Animated status notifications that support success, error, warning, info, and loading states with appropriate color coding and transitions.
+- **QuickActions**: Action buttons with staggered reveal animations for improved user experience when displaying multiple actions.
+- **ActivityFeed**: Dynamic activity feed with staggered animations for each entry, supporting various activity types with appropriate icons.
+- **SearchResults**: Search result listings with staggered fade-in animations and loading/empty states for a smooth search experience.
+- **Chart**: Data visualization component with state transitions for loading, error, and data states, supporting bar, line, pie, and doughnut chart types.
+
+All animation components respect user preferences for reduced motion and adjust timing based on device capabilities, ensuring a consistent and accessible experience across different environments.
 
 ## Getting Started
 *Development setup instructions will be added in future sessions*
