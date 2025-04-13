@@ -3,6 +3,7 @@ import PageContainer from '../components/layout/PageContainer';
 import { StateTransition } from '../components/animations/StateTransition';
 import { MicroInteraction } from '../components/animations/MicroInteraction';
 import Widget from '../components/elements/Widget';
+import DashboardCard from '../components/dashboard/DashboardCard';
 
 const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState({
@@ -21,6 +22,42 @@ const Dashboard: React.FC = () => {
 
   return (
     <PageContainer title="Dashboard Overview">
+      {/* Dashboard Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <DashboardCard 
+          title="Total Lists" 
+          value={42} 
+          trend={{ value: 12, isPositive: true }}
+          color="primary"
+          onClick={() => console.log('Lists card clicked')}
+        />
+        
+        <DashboardCard 
+          title="Active Enrichments" 
+          value={8} 
+          trend={{ value: 5, isPositive: true }}
+          color="success"
+          onClick={() => console.log('Enrichments card clicked')}
+        />
+        
+        <DashboardCard 
+          title="Pending Exports" 
+          value={3} 
+          trend={{ value: 2, isPositive: false }}
+          color="warning"
+          onClick={() => console.log('Exports card clicked')}
+        />
+        
+        <DashboardCard 
+          title="Data Groups" 
+          value={15} 
+          trend={{ value: 8, isPositive: true }}
+          color="secondary"
+          onClick={() => console.log('Groups card clicked')}
+        />
+      </div>
+      
+      {/* Widgets */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Metrics Widget */}
         <Widget 
