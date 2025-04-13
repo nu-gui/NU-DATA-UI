@@ -1,8 +1,10 @@
 import React, { ReactNode } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { animations } from '../../animations/animations';
+import { motion, AnimatePresence, Variants, Transition } from 'framer-motion';
+import { getAnimations } from '../../animations/animations'; // Import getAnimations
+import useReducedMotion from '../../hooks/useReducedMotion'; // Import useReducedMotion
 
 type StateType = 'idle' | 'loading' | 'success' | 'error' | 'empty';
+type AnimationType = keyof ReturnType<typeof getAnimations>; // Use keys from getAnimations return type
 
 interface StateTransitionProps {
   state: StateType;
@@ -11,7 +13,7 @@ interface StateTransitionProps {
   loadingComponent?: ReactNode;
   errorComponent?: ReactNode;
   emptyComponent?: ReactNode;
-  animation?: 'fadeIn' | 'slideUp' | 'slideDown' | 'slideLeft' | 'slideRight' | 'scale';
+  animation?: AnimationType; // Use the derived AnimationType
 }
 
 export const StateTransition: React.FC<StateTransitionProps> = ({
@@ -23,7 +25,21 @@ export const StateTransition: React.FC<StateTransitionProps> = ({
   emptyComponent = <div className="p-4 text-center text-gray-500">No data available</div>,
   animation = 'fadeIn',
 }) => {
-  const selectedAnimation = animations[animation];
+  const prefersReducedMotion = useReducedMotion();
+  const animations = getAnimations(prefersReducedMotion); // Get motion-aware animations
+  const selectedAnimation = animations[animation]; // Select the specific animation variant
+
+  const animationProps = selectedAnimation ? {
+    initial: selectedAnimation.initial,
+    animate: selectedAnimation.animate,
+    exit: selectedAnimation.exit,
+    transition: selectedAnimation.transition as Transition // Cast transition to Transition type
+  } : { // Fallback if animation key is invalid (shouldn't happen with AnimationType)
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+    transition: { duration: prefersReducedMotion ? 0 : 0.3 }
+  };
 
   return (
     <div className={className}>
@@ -31,10 +47,7 @@ export const StateTransition: React.FC<StateTransitionProps> = ({
         {state === 'loading' && (
           <motion.div
             key="loading"
-            initial={selectedAnimation.initial}
-            animate={selectedAnimation.animate}
-            exit={selectedAnimation.exit}
-            transition={selectedAnimation.transition}
+            {...animationProps}
           >
             {loadingComponent}
           </motion.div>
@@ -42,10 +55,7 @@ export const StateTransition: React.FC<StateTransitionProps> = ({
         {state === 'error' && (
           <motion.div
             key="error"
-            initial={selectedAnimation.initial}
-            animate={selectedAnimation.animate}
-            exit={selectedAnimation.exit}
-            transition={selectedAnimation.transition}
+            {...animationProps}
           >
             {errorComponent}
           </motion.div>
@@ -53,10 +63,7 @@ export const StateTransition: React.FC<StateTransitionProps> = ({
         {state === 'empty' && (
           <motion.div
             key="empty"
-            initial={selectedAnimation.initial}
-            animate={selectedAnimation.animate}
-            exit={selectedAnimation.exit}
-            transition={selectedAnimation.transition}
+            {...animationProps}
           >
             {emptyComponent}
           </motion.div>
@@ -64,10 +71,7 @@ export const StateTransition: React.FC<StateTransitionProps> = ({
         {(state === 'idle' || state === 'success') && (
           <motion.div
             key="content"
-            initial={selectedAnimation.initial}
-            animate={selectedAnimation.animate}
-            exit={selectedAnimation.exit}
-            transition={selectedAnimation.transition}
+            {...animationProps}
           >
             {children}
           </motion.div>

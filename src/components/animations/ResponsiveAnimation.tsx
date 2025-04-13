@@ -1,100 +1,97 @@
-import React, { ReactNode } from 'react';
-import { motion, Variants } from 'framer-motion';
-import useMediaQuery from '../../hooks/useMediaQuery';
+import React, { ReactNode, useState, useEffect } from 'react';
+import { motion, Variants, Transition } from 'framer-motion';
+import useMediaQuery, { breakpoints } from '../../hooks/useMediaQuery';
+import useReducedMotion from '../../hooks/useReducedMotion';
+import { easings } from '../../animations/easings'; // Import shared easings
 
 interface ResponsiveAnimationProps {
   children: ReactNode;
-  type?: 'fade' | 'slide' | 'scale' | 'combined';
+  type?: 'fade' | 'slideUp' | 'slideDown' | 'slideLeft' | 'slideRight' | 'scale' | 'combined'; // Added more slide directions
   duration?: number;
   delay?: number;
+  ease?: keyof typeof easings; // Allow specifying easing
+  className?: string; // Allow passing className
 }
 
 export const ResponsiveAnimation: React.FC<ResponsiveAnimationProps> = ({
   children,
   type = 'combined',
   duration = 0.5,
-  delay = 0
+  delay = 0,
+  ease = 'easeOut', // Default easing
+  className = '',
 }) => {
-  const isMobile = useMediaQuery('(max-width: 640px)');
-  const isTablet = useMediaQuery('(min-width: 641px) and (max-width: 1024px)');
-  
-  const animationDuration = isMobile ? duration * 0.7 : isTablet ? duration * 0.85 : duration;
-  const animationDelay = isMobile ? delay * 0.5 : delay;
-  
-  const fadeVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { 
-        duration: animationDuration,
-        delay: animationDelay,
-        ease: 'easeOut'
-      }
-    }
+  const [isMounted, setIsMounted] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
+  const isMobile = useMediaQuery(`(max-width: ${breakpoints.sm - 1}px)`); // Use imported breakpoints
+  const isTablet = useMediaQuery(`(min-width: ${breakpoints.sm}px) and (max-width: ${breakpoints.lg - 1}px)`);
+
+  useEffect(() => {
+    setIsMounted(true); // Component has mounted, safe to render motion
+  }, []);
+
+  const animationDuration = prefersReducedMotion ? 0 : (isMobile ? duration * 0.7 : isTablet ? duration * 0.85 : duration);
+  const animationDelay = prefersReducedMotion ? 0 : (isMobile ? delay * 0.5 : delay);
+
+  const transition: Transition = {
+    duration: animationDuration,
+    delay: animationDelay,
+    ease: easings[ease] || easings.easeOut, // Use specified or default easing
   };
-  
-  const slideVariants: Variants = {
-    hidden: { 
-      x: isMobile ? -20 : isTablet ? -30 : -40,
-      opacity: 0 
+
+  const baseVariants: Record<string, Variants> = {
+    fade: {
+      hidden: { opacity: 0 },
+      visible: { opacity: 1, transition },
     },
-    visible: { 
-      x: 0,
-      opacity: 1,
-      transition: { 
-        duration: animationDuration,
-        delay: animationDelay,
-        ease: 'easeOut'
-      }
-    }
-  };
-  
-  const scaleVariants: Variants = {
-    hidden: { 
-      scale: isMobile ? 0.9 : 0.8,
-      opacity: 0 
+    slideUp: {
+      hidden: { opacity: 0, y: isMobile ? 15 : isTablet ? 25 : 35 },
+      visible: { opacity: 1, y: 0, transition },
     },
-    visible: { 
-      scale: 1,
-      opacity: 1,
-      transition: { 
-        duration: animationDuration,
-        delay: animationDelay,
-        ease: 'easeOut'
-      }
-    }
-  };
-  
-  const combinedVariants: Variants = {
-    hidden: { 
-      y: isMobile ? 15 : isTablet ? 25 : 35,
-      opacity: 0,
-      scale: isMobile ? 0.95 : 0.9
+    slideDown: {
+      hidden: { opacity: 0, y: isMobile ? -15 : isTablet ? -25 : -35 },
+      visible: { opacity: 1, y: 0, transition },
     },
-    visible: { 
-      y: 0,
-      opacity: 1,
-      scale: 1,
-      transition: { 
-        duration: animationDuration,
-        delay: animationDelay,
-        ease: 'easeOut'
-      }
-    }
+    slideLeft: {
+      hidden: { opacity: 0, x: isMobile ? 15 : isTablet ? 25 : 35 },
+      visible: { opacity: 1, x: 0, transition },
+    },
+    slideRight: {
+      hidden: { opacity: 0, x: isMobile ? -15 : isTablet ? -25 : -35 },
+      visible: { opacity: 1, x: 0, transition },
+    },
+    scale: {
+      hidden: { opacity: 0, scale: isMobile ? 0.95 : 0.9 },
+      visible: { opacity: 1, scale: 1, transition },
+    },
+    combined: { // Example: combines slideUp and scale
+      hidden: {
+        opacity: 0,
+        y: isMobile ? 15 : isTablet ? 25 : 35,
+        scale: isMobile ? 0.95 : 0.9,
+      },
+      visible: {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        transition,
+      },
+    },
   };
-  
-  const variants = 
-    type === 'fade' ? fadeVariants :
-    type === 'slide' ? slideVariants :
-    type === 'scale' ? scaleVariants :
-    combinedVariants;
-  
+
+  const selectedVariants = baseVariants[type] || baseVariants.combined;
+
+  if (!isMounted) {
+    return <div className={className}>{children}</div>;
+  }
+
   return (
     <motion.div
       initial="hidden"
       animate="visible"
-      exit="hidden"
-      variants={variants}
+      exit="hidden" // Consider if exit animation is always needed or should be optional
+      variants={selectedVariants}
+      className={className}
     >
       {children}
     </motion.div>

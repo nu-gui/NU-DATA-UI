@@ -1,12 +1,16 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import ResponsiveAnimation from '../animations/ResponsiveAnimation'; // Import the wrapper
 
 const Card = ({
   variant = 'default',
   padding = 'md',
   className = '',
   children,
-  ...props
+  animationType = 'slideUp', // Default animation type
+  animationDuration, // Allow overriding duration
+  animationDelay, // Allow overriding delay
+  animationEase, // Allow overriding ease
+  ...props // Pass remaining props to the underlying div
 }) => {
   const baseClasses = 'rounded-lg overflow-hidden';
   
@@ -25,18 +29,18 @@ const Card = ({
   
   const cardClasses = `${baseClasses} ${variantClasses[variant]} ${paddingClasses[padding]} ${className}`;
   
+  
   return (
-    <motion.div
+    <ResponsiveAnimation
+      type={animationType}
+      duration={animationDuration}
+      delay={animationDelay}
+      ease={animationEase}
       className={cardClasses}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
-      whileHover={{ y: -5, transition: { duration: 0.2 } }}
-      {...props}
+      {...props} // Pass props like onClick, etc., to the div rendered by ResponsiveAnimation
     >
       {children}
-    </motion.div>
+    </ResponsiveAnimation>
   );
 };
 

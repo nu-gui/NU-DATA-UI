@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import ResponsiveAnimation from '../animations/ResponsiveAnimation';
 import { gsap } from 'gsap';
 
 interface DashboardCardProps {
@@ -34,7 +34,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
   
   useEffect(() => {
     if (cardRef.current && typeof value === 'number') {
-      const element = cardRef.current.querySelector('.card-value');
+      const element = cardRef.current?.querySelector('.card-value'); 
       if (element) {
         gsap.fromTo(
           element,
@@ -54,42 +54,38 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
   }, [value]);
 
   return (
-    <motion.div
-      ref={cardRef}
-      className={`rounded-lg border p-4 shadow-sm ${colorClasses[color]} transition-all duration-300`}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      whileHover={{ scale: 1.02, boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
-      whileTap={{ scale: 0.98 }}
+    <ResponsiveAnimation
+      type="slideUp" // Default animation, can be customized via props if needed
+      className={`rounded-lg border p-4 shadow-sm ${colorClasses[color]} transition-colors duration-300`} // Keep color transition, remove motion transition
       onClick={onClick}
     >
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-sm font-medium">{title}</h3>
-        {icon && <div className="text-xl">{icon}</div>}
-      </div>
-      
-      <div className="flex items-end justify-between">
-        <div className="card-value text-2xl font-bold">
-          {typeof value === 'number' ? value.toLocaleString() : value}
+      <div ref={cardRef}> {/* Add a wrapper div for GSAP to target if needed, or adjust selector */}
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-sm font-medium">{title}</h3>
+          {icon && <div className="text-xl">{icon}</div>}
         </div>
         
-        {trend && (
-          <motion.div 
-            className={`flex items-center text-sm ${trend.isPositive ? 'text-green-600' : 'text-red-600'}`}
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <span className="mr-1">
-              {trend.isPositive ? '↑' : '↓'}
-            </span>
-            <span>{trend.value}%</span>
-          </motion.div>
-        )}
+        <div className="flex items-end justify-between">
+          <div className="card-value text-2xl font-bold">
+            {/* GSAP targets this element */}
+            {typeof value === 'number' ? 0 : value} {/* Start at 0 for GSAP animation */}
+          </div>
+          
+          {trend && (
+            <ResponsiveAnimation 
+              type="fade" 
+              delay={0.3} // Keep original delay
+              className={`flex items-center text-sm ${trend.isPositive ? 'text-green-600' : 'text-red-600'}`}
+            >
+              <span className="mr-1">
+                {trend.isPositive ? '↑' : '↓'}
+              </span>
+              <span>{trend.value}%</span>
+            </ResponsiveAnimation>
+          )}
+        </div>
       </div>
-    </motion.div>
+    </ResponsiveAnimation>
   );
 };
 
