@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { animations } from '../../animations/animations';
+import { getAnimations } from '../../animations/animations'; // Correct import
+import useReducedMotion from '../../hooks/useReducedMotion'; // Import useReducedMotion
 
 interface PageTransitionProps {
   children: ReactNode;
@@ -15,16 +16,27 @@ export const PageTransition: React.FC<PageTransitionProps> = ({
   className = '',
   animation = 'fadeIn',
 }) => {
-  const selectedAnimation = animations[animation];
+  const prefersReducedMotion = useReducedMotion();
+  const animations = getAnimations(prefersReducedMotion); // Get motion-aware animations
+  const selectedAnimation = animations[animation]; // Select the specific animation variant
+
+  const animationProps = selectedAnimation ? {
+    initial: selectedAnimation.initial,
+    animate: selectedAnimation.animate,
+    exit: selectedAnimation.exit,
+    transition: selectedAnimation.transition as any // Cast transition to any temporarily
+  } : { // Fallback
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+    transition: { duration: prefersReducedMotion ? 0 : 0.3 }
+  };
 
   return (
     <AnimatePresence mode="wait">
       <motion.div
         key={transitionKey}
-        initial={selectedAnimation.initial}
-        animate={selectedAnimation.animate}
-        exit={selectedAnimation.exit}
-        transition={selectedAnimation.transition}
+        {...animationProps}
         className={className}
       >
         {children}
