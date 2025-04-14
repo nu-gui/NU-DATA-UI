@@ -6,36 +6,11 @@ import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
 import { UserLoginDto, PasswordResetRequestDto, PasswordResetDto } from '../models/user.model';
 import { logger } from '../../core/utils/logger';
-
-const mockUserService = {
-  findUserByEmail: async (email: string) => {
-    if (email === 'admin@example.com') {
-      return {
-        id: '22222222-2222-2222-2222-222222222222',
-        email: 'admin@example.com',
-        passwordHash: await AuthService.hashPassword('password'),
-        firstName: 'Admin',
-        lastName: 'User',
-        role: 'admin',
-        tenantId: '11111111-1111-1111-1111-111111111111',
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-    }
-    return null;
-  },
-  updateUserPassword: async (userId: string, passwordHash: string) => {
-    logger.info(`Password updated for user ${userId}`);
-    return true;
-  },
-  storeResetToken: async (email: string, token: string) => {
-    logger.info(`Reset token stored for ${email}`);
-    return true;
-  }
-};
+import { UserService } from '../services/user.service';
 
 export class AuthController {
+  private static userService = new UserService();
+
   /**
    * Login endpoint
    * @param req Request with login credentials
@@ -55,7 +30,7 @@ export class AuthController {
         });
       }
 
-      const user = await mockUserService.findUserByEmail(email);
+      const user = await this.userService.findUserByEmail(email);
 
       if (!user) {
         return res.status(401).json({
@@ -162,7 +137,7 @@ export class AuthController {
         });
       }
 
-      const user = await mockUserService.findUserByEmail(email);
+      const user = await this.userService.findUserByEmail(email);
 
       if (!user) {
         return res.status(200).json({
@@ -174,7 +149,7 @@ export class AuthController {
 
       const token = AuthService.generatePasswordResetToken(user.id as any);
 
-      await mockUserService.storeResetToken(email, token);
+      await this.userService.storeResetToken(email, token);
 
       logger.info(`Password reset requested for ${email}. Token: ${token}`);
 
@@ -228,7 +203,7 @@ export class AuthController {
 
       const passwordHash = await AuthService.hashPassword(newPassword);
 
-      await mockUserService.updateUserPassword(userId, passwordHash);
+      await this.userService.updateUserPassword(userId, passwordHash);
 
       return res.status(200).json({
         data: {

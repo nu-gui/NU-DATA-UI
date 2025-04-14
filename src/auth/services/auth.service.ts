@@ -64,6 +64,30 @@ export class AuthService {
   static async comparePassword(password: string, hash: string): Promise<boolean> {
     return bcrypt.compare(password, hash);
   }
+  
+  /**
+   * Verify password against hash
+   * @param password Plain text password
+   * @param hash Hashed password
+   * @returns True if password matches hash
+   */
+  static async verifyPassword(password: string, hash: string): Promise<boolean> {
+    return this.comparePassword(password, hash);
+  }
+  
+  /**
+   * Generate JWT token for user ID
+   * @param userId User ID
+   * @returns JWT token
+   */
+  static generateJwtToken(userId: string): string {
+    const payload = {
+      userId: userId.toString(),
+      purpose: 'authentication'
+    };
+    
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRATION });
+  }
 
   /**
    * Generate password reset token
