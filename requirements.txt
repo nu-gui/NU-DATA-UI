@@ -14,7 +14,7 @@ asyncpg==0.30.0
 
 # Redis for job queue
 redis==5.0.1
-rq==2.3.1
+rq==2.3.2
 
 # Testing
 pytest==8.3.5
