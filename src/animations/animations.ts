@@ -75,11 +75,13 @@ const baseAnimations = {
   },
   successState: {
     initial: { backgroundColor: 'transparent' },
-    animate: { backgroundColor: 'var(--color-success-100)' }, // Using CSS variable for theme color
+    animate: { backgroundColor: 'rgb(var(--color-green-50) / 1)' }, // Using Tailwind theme token
+    exit: { backgroundColor: 'transparent' },
   },
   errorState: {
     initial: { backgroundColor: 'transparent' },
-    animate: { backgroundColor: 'var(--color-error-100)' }, // Using CSS variable for theme color
+    animate: { backgroundColor: 'rgb(var(--color-red-50) / 1)' }, // Using Tailwind theme token
+    exit: { backgroundColor: 'transparent' },
   },
   emptyState: {
     initial: { opacity: 0 },
