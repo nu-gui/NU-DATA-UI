@@ -30,3 +30,19 @@ This document tracks the implementation status of UI components for the NU-DATA-
 | Button | Implemented | Planned | Implemented | Planned | Button component with variants |
 | Widget | Implemented | Planned | Implemented | Planned | Dashboard widget container |
 | DashboardCard | Implemented | Planned | Implemented | Planned | Card for dashboard metrics |
+
+## Dashboard Components
+
+| Component | Status | Dark Mode Support | Responsive | Accessibility | Notes |
+|-----------|--------|------------------|------------|---------------|-------|
+| MetricCard | Implemented | Implemented | Implemented | Planned | Card for displaying metrics with trend indicators |
+| ChartWidget | Implemented | Implemented | Implemented | Planned | Widget for displaying charts with Chart.js |
+| ActivityWidget | Implemented | Implemented | Implemented | Planned | Widget for displaying activity feeds |
+| StatusWidget | Implemented | Implemented | Implemented | Planned | Widget for displaying system status information |
+
+## Import/Export Components
+
+| Component | Status | Dark Mode Support | Responsive | Accessibility | Notes |
+|-----------|--------|------------------|------------|---------------|-------|
+| FileUpload | Implemented | Implemented | Implemented | Planned | Drag and drop file upload component |
+| ProgressTracker | Implemented | Implemented | Implemented | Planned | Progress bar for tracking import/export operations |

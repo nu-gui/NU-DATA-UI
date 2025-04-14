@@ -1,5 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import DataViewLayout from '../components/layout/layouts/DataViewLayout';
+import FileUpload from '../components/importexport/FileUpload';
+import ProgressTracker from '../components/importexport/ProgressTracker';
+import { MicroInteraction } from '../components/animations/MicroInteraction';
+import { StateTransition } from '../components/animations/StateTransition';
 
 const FilterPanel = () => (
   <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
@@ -43,6 +47,58 @@ const FilterPanel = () => (
 );
 
 const ExportImport: React.FC = () => {
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [importProgress, setImportProgress] = useState(0);
+  const [importStatus, setImportStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
+  const [exportProgress, setExportProgress] = useState(0);
+  const [exportStatus, setExportStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
+  const [exportName, setExportName] = useState('');
+  const [exportFormat, setExportFormat] = useState('csv');
+
+  const handleFileSelect = (file: File) => {
+    setSelectedFile(file);
+  };
+
+  const startImport = () => {
+    if (!selectedFile) return;
+    
+    setImportStatus('processing');
+    setImportProgress(0);
+    
+    const interval = setInterval(() => {
+      setImportProgress(prev => {
+        const newProgress = prev + 10;
+        if (newProgress >= 100) {
+          clearInterval(interval);
+          setImportStatus('success');
+          return 100;
+        }
+        return newProgress;
+      });
+    }, 500);
+  };
+
+  const startExport = () => {
+    if (!exportName) return;
+    
+    setExportStatus('processing');
+    setExportProgress(0);
+    
+    const interval = setInterval(() => {
+      setExportProgress(prev => {
+        const newProgress = prev + 15;
+        if (newProgress >= 100) {
+          clearInterval(interval);
+          setExportStatus('success');
+          return 100;
+        }
+        return newProgress;
+      });
+    }, 400);
+  };
+
   return (
     <DataViewLayout 
       title="Export & Import" 
@@ -52,10 +108,16 @@ const ExportImport: React.FC = () => {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Export & Import Jobs</h2>
           <div className="space-x-2">
-            <button className="px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600">
+            <button 
+              className="px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600"
+              onClick={() => setShowExportModal(true)}
+            >
               New Export
             </button>
-            <button className="px-4 py-2 bg-secondary-500 text-white rounded hover:bg-secondary-600">
+            <button 
+              className="px-4 py-2 bg-secondary-500 text-white rounded hover:bg-secondary-600"
+              onClick={() => setShowImportModal(true)}
+            >
               New Import
             </button>
           </div>
@@ -134,6 +196,156 @@ const ExportImport: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Import Modal */}
+      {showImportModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-lg w-full">
+            <h3 className="text-xl font-semibold mb-4">Import Data</h3>
+            <StateTransition state={importStatus === 'success' ? 'success' : 'idle'}>
+              {importStatus === 'success' ? (
+                <div className="text-center py-8">
+                  <div className="text-5xl mb-4 text-success-500">✓</div>
+                  <h4 className="text-xl font-medium mb-2">Import Successful</h4>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">
+                    Your data has been successfully imported.
+                  </p>
+                  <button 
+                    className="px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600"
+                    onClick={() => {
+                      setShowImportModal(false);
+                      setImportStatus('idle');
+                      setSelectedFile(null);
+                    }}
+                  >
+                    Close
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <FileUpload 
+                    onFileSelect={handleFileSelect} 
+                    className="mb-4"
+                  />
+                  {selectedFile && (
+                    <div className="mb-4">
+                      <p className="text-sm font-medium mb-2">Selected File:</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{selectedFile.name} ({(selectedFile.size / 1024).toFixed(2)} KB)</p>
+                    </div>
+                  )}
+                  <ProgressTracker 
+                    progress={importProgress} 
+                    status={importStatus} 
+                    className="mb-4"
+                  />
+                  <div className="flex justify-between mt-6">
+                    <button 
+                      className="px-4 py-2 border border-gray-300 rounded dark:border-gray-600"
+                      onClick={() => setShowImportModal(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      className={`px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 ${
+                        !selectedFile || importStatus === 'processing' ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                      onClick={startImport}
+                      disabled={!selectedFile || importStatus === 'processing'}
+                    >
+                      {importStatus === 'processing' ? 'Importing...' : 'Start Import'}
+                    </button>
+                  </div>
+                </>
+              )}
+            </StateTransition>
+          </div>
+        </div>
+      )}
+
+      {/* Export Modal */}
+      {showExportModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-lg w-full">
+            <h3 className="text-xl font-semibold mb-4">Export Data</h3>
+            <StateTransition state={exportStatus === 'success' ? 'success' : 'idle'}>
+              {exportStatus === 'success' ? (
+                <div className="text-center py-8">
+                  <div className="text-5xl mb-4 text-success-500">✓</div>
+                  <h4 className="text-xl font-medium mb-2">Export Successful</h4>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">
+                    Your data has been successfully exported.
+                  </p>
+                  <button 
+                    className="px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 mr-2"
+                    onClick={() => {
+                    }}
+                  >
+                    Download
+                  </button>
+                  <button 
+                    className="px-4 py-2 border border-gray-300 rounded dark:border-gray-600"
+                    onClick={() => {
+                      setShowExportModal(false);
+                      setExportStatus('idle');
+                      setExportName('');
+                    }}
+                  >
+                    Close
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1">Export Name</label>
+                    <input 
+                      type="text" 
+                      className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+                      value={exportName}
+                      onChange={(e) => setExportName(e.target.value)}
+                      placeholder="Enter a name for this export"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1">Format</label>
+                    <select 
+                      className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+                      value={exportFormat}
+                      onChange={(e) => setExportFormat(e.target.value)}
+                    >
+                      <option value="csv">CSV</option>
+                      <option value="xlsx">Excel (XLSX)</option>
+                      <option value="json">JSON</option>
+                      <option value="xml">XML</option>
+                    </select>
+                  </div>
+                  <ProgressTracker 
+                    progress={exportProgress} 
+                    status={exportStatus} 
+                    className="mb-4"
+                  />
+                  <div className="flex justify-between mt-6">
+                    <button 
+                      className="px-4 py-2 border border-gray-300 rounded dark:border-gray-600"
+                      onClick={() => setShowExportModal(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      className={`px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 ${
+                        !exportName || exportStatus === 'processing' ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                      onClick={startExport}
+                      disabled={!exportName || exportStatus === 'processing'}
+                    >
+                      {exportStatus === 'processing' ? 'Exporting...' : 'Start Export'}
+                    </button>
+                  </div>
+                </>
+              )}
+            </StateTransition>
+          </div>
+        </div>
+      )}
     </DataViewLayout>
   );
 };
