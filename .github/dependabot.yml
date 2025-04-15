@@ -5,6 +5,12 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
+    ignore:
+      # Keep React at v18.2.0 due to compatibility issues with other dependencies
+      - dependency-name: "react"
+        versions: [">18.2.0"]
+      - dependency-name: "react-dom"
+        versions: [">18.2.0"]
     
   - package-ecosystem: "pip"
     directory: "/"
