@@ -1,5 +1,11 @@
 # NU-DATA-UI
 
+[![Test](https://github.com/nu-gui/NU-DATA-UI/actions/workflows/test.yml/badge.svg)](https://github.com/nu-gui/NU-DATA-UI/actions/workflows/test.yml)
+[![Lint](https://github.com/nu-gui/NU-DATA-UI/actions/workflows/lint.yml/badge.svg)](https://github.com/nu-gui/NU-DATA-UI/actions/workflows/lint.yml)
+[![E2E Tests](https://github.com/nu-gui/NU-DATA-UI/actions/workflows/e2e-tests.yml/badge.svg)](https://github.com/nu-gui/NU-DATA-UI/actions/workflows/e2e-tests.yml)
+[![Preview Deployment](https://github.com/nu-gui/NU-DATA-UI/actions/workflows/preview-deploy.yml/badge.svg)](https://github.com/nu-gui/NU-DATA-UI/actions/workflows/preview-deploy.yml)
+[![Production Deployment](https://github.com/nu-gui/NU-DATA-UI/actions/workflows/production-deploy.yml/badge.svg)](https://github.com/nu-gui/NU-DATA-UI/actions/workflows/production-deploy.yml)
+
 ## Overview
 The NU DATA UI system is a multi-tenant SaaS platform designed to centralize and streamline data enrichment, contact management, campaign analytics, and external system integrations (via FTP/Webhooks).
 
