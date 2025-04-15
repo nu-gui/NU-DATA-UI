@@ -1,0 +1,103 @@
+name: Production Deployment
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/CODEOWNERS'
+      - '.github/dependabot.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm install --no-package-lock --legacy-peer-deps
+      
+    - name: Run tests
+      run: npm test
+      env:
+        CI: true
+        
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm install --no-package-lock --legacy-peer-deps
+      
+    - name: Build frontend
+      run: npm run build
+      env:
+        CI: true
+        REACT_APP_API_URL: https://api.nudata.example.com
+        
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifacts
+        path: build/
+        
+  deploy-production:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: production
+      url: https://app.nudata.example.com
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: build-artifacts
+        path: build
+        
+    - name: Deploy to production
+      run: |
+        # This would be replaced with actual deployment commands
+        # For example, using AWS S3 + CloudFront, Vercel, Netlify, etc.
+        echo "Deploying to production environment"
+        
+    - name: Create deployment tag
+      run: |
+        TIMESTAMP=$(date +%Y%m%d%H%M%S)
+        git tag "release-${TIMESTAMP}"
+        git push origin "release-${TIMESTAMP}"
+        
+    - name: Notify team of deployment
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const lastCommit = context.sha.substring(0, 7);
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `🚀 Production deployment completed!\n\nCommit: ${lastCommit}\nEnvironment: Production\nURL: https://app.nudata.example.com`
+          });
