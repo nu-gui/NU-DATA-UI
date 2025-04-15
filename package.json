@@ -88,7 +88,7 @@
     "playwright": "^1.42.1",
     "prettier": "^3.0.3",
     "react-scripts": "5.0.1",
-    "supertest": "^6.3.4",
+    "supertest": "^7.1.0",
     "ts-jest": "^29.1.2",
     "typescript": "^5.8.3",
     "vitest": "^1.2.2"
